@@ -20,7 +20,13 @@ const updateAdvisory = async () => {
   advisoryData.updating = true
 
   try {
-    const data = await fetch('https://api.xrplorer.com/v1/advisorylist')
+    const data = await fetch('https://api.xrplorer.com/v1/advisorylist', {
+      headers: {},
+      method: 'get',
+      timeout: 10000,
+      redirect: 'follow',
+      follow: 3
+    })
     const json = await data.json()
 
     if (Object.keys(json).length < 100) {
