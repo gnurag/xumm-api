@@ -3,17 +3,10 @@
 {% block content %}
 <style>
   .alert-danger {
-    border-radius: 12px !important;
-    background: #FFF9F9 !important;
-    border: none !important;
-    color: #FF5B5B !important;
+    border-radius: 12px !important; background: #FFF9F9 !important; border: none !important; color: #FF5B5B !important;
   }
-
   .alert-primary {
-    border-radius: 12px !important;
-    background: #F0F3FF !important;
-    border: none !important;
-    color: #3052FF !important;
+    border-radius: 12px !important; background: #F0F3FF !important; border: none !important; color: #3052FF !important;
   }
 </style>
 
@@ -23,8 +16,6 @@
   <b>We're currently optimizing XUMM, updates will be released regularly.</b>
   <b class="d-inline-block pt-2">Only use accounts with low balances and DO NOT send large amount of XRP or IOU's until
     we release 1.0.0.</b>
-  {# <br /> #}
-  {# <span class="h5 d-block mt-3"><b>This is a BETA, expect DRAGONS.</b></span> #}
 </p>
 
 <p class="alert alert-primary text-center px-3 py-3">
@@ -50,11 +41,10 @@
 
 {% block head %}
 <script>
-  (function () {
+  (function() {
     if (typeof window.ReactNativeWebView !== 'undefined') {
-      window.ReactNativeWebView.postMessage(JSON.stringify({ version: {{ version|default(1)}
-  }}))
-      }
-    }) ()
+      window.ReactNativeWebView.postMessage(JSON.stringify({version: {{version|default(1)}}}))
+    }
+  })()
 </script>
 {% endblock %}
