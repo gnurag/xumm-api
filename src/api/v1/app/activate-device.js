@@ -11,11 +11,14 @@ module.exports = async (req, res) => {
     if (Object.keys(req.headers).indexOf('authorization') > -1) {
       const bearer = req.headers.authorization.match(/([0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12})\.([0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12})/i)
       if (bearer) {
-        if (typeof req.body !== 'object' ||
-          typeof req.body.uniqueDeviceIdentifier === 'undefined' ||
-          typeof req.body.devicePlatform === 'undefined' ||
-          typeof req.body.devicePushToken === 'undefined') {
-            throw new Error('Missing device information')
+        if (typeof req.body !== 'object') {
+          throw new Error('Missing device information')
+        } else if (typeof req.body.uniqueDeviceIdentifier === 'undefined') {
+          throw new Error('Missing device information: uniqueDeviceIdentifier')
+        } else if (typeof req.body.devicePlatform === 'undefined') {
+          throw new Error('Missing device information: devicePlatform')
+        } else if (typeof req.body.devicePushToken === 'undefined') {
+          throw new Error('Missing device information: devicePushToken')
         }
 
         const deviceToActivateQuery = `
