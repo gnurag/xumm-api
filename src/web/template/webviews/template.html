@@ -1,58 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>
-      {%- block title -%}
-        𝗫𝗨𝗠𝗠 | Signed Sent Delivered
-      {%- endblock -%}
-    </title>
-    
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
-    <link rel="manifest" href="/assets/icons/site.webmanifest">
-    <link rel="shortcut icon" href="/assets/icons/favicon.ico">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="msapplication-config" content="/assets/icons/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+<head>
+  <meta charset="utf-8">
+  <title>
+    {%- block title -%}
+    𝗫𝗨𝗠𝗠 | Signed Sent Delivered
+    {%- endblock -%}
+  </title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/fa35e16c8d.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Fredoka+One&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.typekit.net/vtt7ckl.css">
-    
-    {% block head %}{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/site.webmanifest">
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-config" content="/assets/icons/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
 
-    <style>
-      /** 
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://kit.fontawesome.com/fa35e16c8d.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Fredoka+One&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/vtt7ckl.css">
+
+  {% block head %}{% endblock %}
+
+  <style>
+    /**
        * Disable bounce scroll on iOS:
        */
 
-      html, body { width: 100%; height: 100%; overflow: hidden; }
-      section.container { position: absolute; top: 0; bottom: 0; left: 0; right: 0; overflow-x: hidden; overflow-y: auto; }
-    </style>
-    
-    {# <link rel="stylesheet" href="/assets/css/home.css?v1" crossorigin="anonymous"> #}
-  </head>
-  <body>
-    <section class="container">
-      {% block content %}{% endblock %}
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
 
-      {% if mode.slice(0, 3).toUpperCase() === 'DEV' %}
-        <div class="card mt-4 shadow-sm bg-light mb-3">
-          <div class="card-body px-2 pt-2 pb-0">
-            <h6><small><b>Module / Type @ Language</b></small></h6>
-            <pre class="d-inline-block mb-0 mt-0 text-primary font-weight-bold">{{ module }}</pre>
-            <pre class="d-inline-block mb-0 mt-0 text-dark font-weight-bold">/</pre>
-            <pre class="d-inline-block mb-0 mt-0 text-primary font-weight-bold">{{ type }}</pre>
-            <pre class="d-inline-block mb-0 mt-0 text-dark font-weight-bold">@</pre>
-            <pre class="d-inline-block mb-0 mt-0 text-primary font-weight-bold">{{ language }} (&raquo; {{ 'LANGUAGE_CODE'|i18n }})</pre>
-          </div>
-        </div>
-      {% endif %}
-    </section>
-  </body>
+    section.container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 0 10px;
+    }
+  </style>
+
+  {# <link rel="stylesheet" href="/assets/css/home.css?v1" crossorigin="anonymous"> #}
+</head>
+
+<body>
+  <section class="container">
+    {% block content %}{% endblock %}
+
+    {% if mode.slice(0, 3).toUpperCase() === 'DEV' %}
+    <div class="card mt-4 shadow-sm bg-light mb-3">
+      <div class="card-body px-2 pt-2 pb-0">
+        <h6><small><b>Module / Type @ Language</b></small></h6>
+        <pre class="d-inline-block mb-0 mt-0 text-primary font-weight-bold">{{ module }}</pre>
+        <pre class="d-inline-block mb-0 mt-0 text-dark font-weight-bold">/</pre>
+        <pre class="d-inline-block mb-0 mt-0 text-primary font-weight-bold">{{ type }}</pre>
+        <pre class="d-inline-block mb-0 mt-0 text-dark font-weight-bold">@</pre>
+        <pre
+          class="d-inline-block mb-0 mt-0 text-primary font-weight-bold">{{ language }} (&raquo; {{ 'LANGUAGE_CODE'|i18n }})</pre>
+      </div>
+    </div>
+    {% endif %}
+  </section>
+</body>
+
 </html>

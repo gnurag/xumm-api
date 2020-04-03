@@ -2,65 +2,86 @@
 
 {% block content %}
 
-  {# <h3>{{ 'INAPP_TITLE_CREDITS'|i18n }}</h3> #}
+{# <h3>{{ 'INAPP_TITLE_CREDITS'|i18n }}</h3> #}
 
-  <p class="alert alert-warning text-center">
-    XUMM has been made possible by the generous contributions of several open source developers, XRP Community members and funding from Xpring (Ripple).
-  </p>
+<style>
+  .alert-primary {
+    border-radius: 12px !important;
+    background: #F0F3FF !important;
+    border: none !important;
+    color: #3052FF !important;
+  }
 
-  <h6><b>Thank you,</b></h6>
-  <ul>
-    <li>Open source developers providing code and libs (we'll list them in the final version of XUMM)</li>
-    <li>Developers contributing to the XUMM platform source code</li>
-    <li>Community members &amp; testers: the awesome people spending time on testing XUMM and reporting bugs (so we can fix them)</li>
-    <li>Translation contributors</li>
-    <li>XUMM Pro users (XUMM Pro is not yet available)</li>
-  </ul>
+  .card {
+    border-radius: 12px !important;
+  }
+</style>
 
-  <h6><b>Special thanks go to (random order):</b></h6>
-  <div class="card bg-light">
-    <div class="card-body px-3 pt-3 pb-0">
-      <div class="pb-3 clear clearfix">
-        <img src="https://cdn.xumm.pro/contributor-icons/nixrffm.jpg" width="75" alt="nixerFFM" class="rounded-circle shadow float-left mr-3" />
-        <span class="">
-          <b class="text-primary h6">@nixerFFM</b>
-          <br />
-          <small>Thank you for the many bugs you found, reported and helped us fix.</small>
-        </span>
-      </div>
-      <div class="pb-3 clear clearfix">
-        <img src="https://cdn.xumm.pro/contributor-icons/rippleitinnz.jpg" width="75" alt="nixerFFM" class="rounded-circle shadow float-left mr-3" />
-        <span class="">
-          <b class="text-primary h6">@rippleitinNZ</b>
-          <br />
-          <small>We really appreciate all your help finding bugs &amp; authoring the developer docs (and more)</small>
-        </span>
-      </div>
-      <div class="pb-3 clear clearfix">
-        <img src="https://cdn.xumm.pro/contributor-icons/alloy.jpg" width="75" alt="nixerFFM" class="rounded-circle shadow float-left mr-3" />
-        <span class="">
-          <b class="text-primary h6">@alloynetworks</b>
-          <br />
-          <small>Thank you for being our sparring-partner on... Anything. Code, infra, usability, life. We owe you!</small>
-        </span>
-      </div>
-      <div class="pb-3 clear clearfix">
-        <img src="https://cdn.xumm.pro/contributor-icons/warbler.jpg" width="75" alt="nixerFFM" class="rounded-circle shadow float-left mr-3" />
-        <span class="">
-          <b class="text-primary h6">@Bakshayev (Bithomp)</b>
-          <br />
-          <small>You jumped right in, adding XUMM support to your Bithomp explorer. So cool :D Thank you!</small>
-        </span>
-      </div>
-      <div class="pb-3 clear clearfix">
-        <img src="https://cdn.xumm.pro/contributor-icons/vanessa.jpg" width="75" alt="nixerFFM" class="rounded-circle shadow float-left mr-3" />
-        <span class="">
-          <b class="text-primary h6">@vanessadice</b>
-          <br />
-          <small>XUMM would not exist if it wasn't for you, and the trust you put in our small team!</small>
-        </span>
-      </div>
+<p class="alert alert-primary text-center">
+  XUMM has been made possible by the generous contributions of several open source developers, XRP Community members and
+  funding from Xpring (Ripple).
+</p>
+
+<h6><b>Thank you,</b></h6>
+<ul>
+  <li>Open source developers providing code and libs (we'll list them in the final version of XUMM)</li>
+  <li>Developers contributing to the XUMM platform source code</li>
+  <li>Community members &amp; testers: the awesome people spending time on testing XUMM and reporting bugs (so we can
+    fix them)</li>
+  <li>Translation contributors</li>
+  <li>XUMM Pro users (XUMM Pro is not yet available)</li>
+</ul>
+
+<h6><b>Special thanks go to (random order):</b></h6>
+<div class="card bg-light">
+  <div class="card-body px-3 pt-3 pb-0 mb-2 mx-1">
+    <div class="pb-3 clear clearfix">
+      <img src="https://cdn.xumm.pro/contributor-icons/nixrffm.jpg" width="75" alt="nixerFFM"
+        class="rounded-circle shadow float-left mr-3" />
+      <span class="">
+        <b class="text-primary h6">@nixerFFM</b>
+        <br />
+        <small>Thank you for the many bugs you found, reported and helped us fix.</small>
+      </span>
+    </div>
+    <div class="pb-3 clear clearfix">
+      <img src="https://cdn.xumm.pro/contributor-icons/rippleitinnz.jpg" width="75" alt="nixerFFM"
+        class="rounded-circle shadow float-left mr-3" />
+      <span class="">
+        <b class="text-primary h6">@rippleitinNZ</b>
+        <br />
+        <small>We really appreciate all your help finding bugs &amp; authoring the developer docs (and more)</small>
+      </span>
+    </div>
+    <div class="pb-3 clear clearfix">
+      <img src="https://cdn.xumm.pro/contributor-icons/alloy.jpg" width="75" alt="nixerFFM"
+        class="rounded-circle shadow float-left mr-3" />
+      <span class="">
+        <b class="text-primary h6">@alloynetworks</b>
+        <br />
+        <small>Thank you for being our sparring-partner on... Anything. Code, infra, usability, life. We owe
+          you!</small>
+      </span>
+    </div>
+    <div class="pb-3 clear clearfix">
+      <img src="https://cdn.xumm.pro/contributor-icons/warbler.jpg" width="75" alt="nixerFFM"
+        class="rounded-circle shadow float-left mr-3" />
+      <span class="">
+        <b class="text-primary h6">@Bakshayev (Bithomp)</b>
+        <br />
+        <small>You jumped right in, adding XUMM support to your Bithomp explorer. So cool :D Thank you!</small>
+      </span>
+    </div>
+    <div class="pb-3 clear clearfix">
+      <img src="https://cdn.xumm.pro/contributor-icons/vanessa.jpg" width="75" alt="nixerFFM"
+        class="rounded-circle shadow float-left mr-3" />
+      <span class="">
+        <b class="text-primary h6">@vanessadice</b>
+        <br />
+        <small>XUMM would not exist if it wasn't for you, and the trust you put in our small team!</small>
+      </span>
     </div>
   </div>
+</div>
 
 {% endblock %}
