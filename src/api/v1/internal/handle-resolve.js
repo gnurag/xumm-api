@@ -2,9 +2,15 @@ const fetch = require('node-fetch')
 const log = require('debug')('app:handle-resolve')
 const knownAccount = require('@api/v1/internal/known-account-hydrate')
 const utf8 = require('utf8')
+const taggedAddressCodec = require('xrpl-tagged-address-codec')
+
+// For PayId
+const URL = require('url')
+const isValidDomain = require('is-valid-domain')
+const ip = require('ip')
+const dns = require('dns')
 
 const cacheSeconds = 60 * 15 // 15 minutes
-// const cacheSeconds = 1
 
 /**
  * Todo: add XUMM hashed address book function lookup
@@ -18,6 +24,9 @@ const defaultFetchConfig = {
 }
 
 const is = {
+  possiblePackedAddress (query) {
+    return query.match(/^[TX][a-zA-Z0-9]{20,}$/)
+  },
   validEmailAccount (query) {
     const tester = /^[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
@@ -49,6 +58,52 @@ const is = {
   },
   possibleXrplAccount (query) {
     return new RegExp(/^r[0-9a-zA-Z]{3,}$/).test(query)
+  },
+  async possiblePayId (query) {
+    /**
+     * Checks for IPs and domains pointing to IPs
+     * Domain should be valid and IP should not be local
+     * to prevent PayId based internal network attack
+     */
+    if (new RegExp(/^\$[0-9a-z\._-]+/).test(query)) {
+      const payIdUrl = URL.parse(query.replace(/^\$/, 'https://'))
+      if (typeof payIdUrl.host === 'string' && isValidDomain(payIdUrl.host)) {
+        const resolved = await Promise.all([
+          new Promise(resolve => {
+            dns.resolve4(payIdUrl.host, (err, address) => {
+              // console.log('resolve4', payIdUrl.host, err, address)
+              if (err) {
+                resolve([])
+              } else {
+                resolve(address)
+              }
+            })
+          }),
+          new Promise(resolve => {
+            dns.resolve6(payIdUrl.host, (err, address) => {
+              // console.log('resolve6', payIdUrl.host, err, address)
+              if (err) {
+                resolve([])
+              } else {
+                resolve(address)
+              }
+            })
+          })
+        ])
+
+        const localIps = resolved.reduce((a, b) => {
+          a = a.concat(b)
+          return a
+        }, []).filter(a => {
+          return ip.isPrivate(a)
+        })
+
+        if (localIps < 1) {
+          return true
+        }
+      }
+    }
+    return false
   }
 }
 
@@ -218,27 +273,51 @@ const xrpl = {
   }
 }
 
-const ripple = {
+const payId = {
   async get (query) {
-    const source = 'id.ripple.com'
-    try {
-      const call = await fetch('https://id.ripple.com/v1/user/' + utf8.encode(query), {
-        method: 'get',
-        timeout: 2000
-      })
-      const response = await call.json()
-      if (typeof response === 'object' && response !== null && typeof response.address === 'string') {
-        return [{
-          source,
-          network: null,
-          alias: response.username || query,
-          account: response.address,
-          tag: null,
-          description: ''
-        }]
+    const source = 'payid'
+    if (await is.possiblePayId(query)) {
+      try {
+        const asUrl = URL.parse(query.replace(/^\$/, 'https://'))
+        const endpoint = asUrl.href + (
+          asUrl.path === '/'
+            ? '.well-known/pay'
+            : ''
+        )
+        log('Lookup: payId', query, endpoint)
+        const call = await fetch(endpoint, {
+          method: 'get',
+          ...defaultFetchConfig,
+          headers: {
+            'Accept': 'application/xrpl-mainnet+json; charset=utf-8'
+          }    
+        })
+        const response = await call.json()
+        if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
+          if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
+            if (response.addressDetails.address.match(/^X/)) {
+              const decodedXaddress = taggedAddressCodec.Decode(response.addressDetails.address)
+              const resolvedPayIdDestination = await resolver.get(decodedXaddress.account)
+              const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
+                return m.alias !== m.account
+              })
+              
+              return [{
+                source,
+                network: null,
+                alias: resolvedAliasses.length > 0
+                  ? resolvedAliasses[0].alias
+                  : query,
+                account: decodedXaddress.account,
+                tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
+                description: query
+              }]
+            }
+          }
+        }
+      } catch (e) {
+        log('Query @' + source + ' for [' + query + ']', e.message)
       }
-    } catch (e) {
-      log('Query @' + source + ' for [' + query + ']', e.message)
     }
     return []
   }
@@ -285,16 +364,21 @@ const internalAccounts = {
   }
 }
 
-const activeApps = [ bithomp, ripple, xrpscan, internalAccounts, xrplns, xrpl ]
+const activeApps = [ payId, bithomp, xrpscan, internalAccounts, xrplns, xrpl ]
 
 const app = {
   config: {},
   db: null,
+  query: {},
   initializing: false,
   initialized: false,
-  async initialize (config, db) {
-    this.config = config
-    this.db = db
+  async initialize (req) {
+    this.config = req.config
+    this.db = req.db
+    
+    if (typeof req.query === 'object' && req.query !== null) {
+      this.query = Object.assign({}, req.query)
+    }
 
     if (!this.initializing) {
       this.initializing = true
@@ -319,6 +403,14 @@ const app = {
 const resolver = {
   cache: {},
   async get (query) {
+    /**
+     * query = input, used for cache
+     * lookupHandle = possibly decoded input, the value to work with
+     *    eg. query = X address, lookupHandle = X address decoded to r-address
+     */
+    let lookupHandle = query
+    // TODO: check if lookupHandle is X / T address, if so: decode
+
     const now = Math.round(new Date() / 1000)
     if (typeof this.cache[query] === 'undefined' || this.cache[query].cached < now - cacheSeconds) {
       this.cache[query] = {
@@ -328,12 +420,12 @@ const resolver = {
       }
 
       this.cache[query].explicitTests = {
-        emailAddress: is.validEmailAccount(query),
-        xrplAccount: is.possibleXrplAccount(query)
+        emailAddress: is.validEmailAccount(lookupHandle),
+        xrplAccount: is.possibleXrplAccount(lookupHandle)
       }
     
       const allApps = activeApps.reduce((stack, current) => {
-        stack.push(current.get(query))
+        stack.push(current.get(lookupHandle))
         return stack
       }, [])
   
@@ -345,9 +437,9 @@ const resolver = {
       })
     }
 
-    if (is.possibleXrplAccount(query) && query.length >= 20) {
+    if (is.possibleXrplAccount(lookupHandle) && lookupHandle.length >= 20) {
       // Populate backend cache
-      knownAccount(app.db, query, app.config)
+      knownAccount(app.db, lookupHandle, app.config)
     }
 
     return Object.assign({
@@ -367,13 +459,24 @@ const resolver = {
   */
 
 module.exports = async (handle, req) => {
+  let query = handle.trim()
+
   if (!app.initialized) {
     log('Initializing')
-    await app.initialize(req.config, req.db)
+    await app.initialize(req)
     log('Initialized')
   }
 
-  const resolved = await resolver.get(handle.trim())
+  if (is.possiblePackedAddress(query)) {
+    try {
+      const decoded = taggedAddressCodec.Decode(query)
+      query = decoded.account
+    } catch (e) {
+      // Do nothing
+    }
+  }
+
+  const resolved = await resolver.get(query)
 
   return {
     input: handle,
