@@ -234,7 +234,9 @@ const xrpscan = {
           }]
         }
       } catch (e) {
-        log('Query @' + source + ' for [' + query + ']', e.message)
+        if (!e.message.match(/Unexpected token/)) {
+          log('Query @' + source + ' for [' + query + ']', e.message)
+        }
       }
     }
     return []
@@ -285,33 +287,43 @@ const payId = {
             : ''
         )
         log('Lookup: payId', query, endpoint)
-        const call = await fetch(endpoint, {
-          method: 'get',
-          ...defaultFetchConfig,
-          headers: {
-            'Accept': 'application/xrpl-mainnet+json; charset=utf-8'
-          }    
-        })
-        const response = await call.json()
-        if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
-          if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
-            if (response.addressDetails.address.match(/^X/)) {
-              const decodedXaddress = taggedAddressCodec.Decode(response.addressDetails.address)
-              const resolvedPayIdDestination = await resolver.get(decodedXaddress.account)
-              const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
-                return m.alias !== m.account
-              })
-              
-              return [{
-                source,
-                network: null,
-                alias: resolvedAliasses.length > 0
-                  ? resolvedAliasses[0].alias
-                  : query,
-                account: decodedXaddress.account,
-                tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
-                description: query
-              }]
+
+        const lookupTypeHeaders = {
+          mainnet: 'application/xrpl-mainnet+json; charset=utf-8',
+          testnet: 'application/xrpl-testnet+json; charset=utf-8'
+        }
+
+        for (net in lookupTypeHeaders) {
+          log(net)
+          const call = await fetch(endpoint, {
+            method: 'get',
+            ...defaultFetchConfig,
+            headers: {
+              'Accept': lookupTypeHeaders[net]
+            }    
+          })
+          const response = await call.json()
+          // log(response)
+          if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
+            if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
+              if (response.addressDetails.address.match(/^[XT]/)) {
+                const decodedXaddress = taggedAddressCodec.Decode(response.addressDetails.address)
+                const resolvedPayIdDestination = await resolver.get(decodedXaddress.account)
+                const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
+                  return m.alias !== m.account
+                })
+                
+                return [{
+                  source,
+                  network: null,
+                  alias: resolvedAliasses.length > 0
+                    ? resolvedAliasses[0].alias
+                    : query,
+                  account: decodedXaddress.account,
+                  tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
+                  description: query
+                }]
+              }
             }
           }
         }
