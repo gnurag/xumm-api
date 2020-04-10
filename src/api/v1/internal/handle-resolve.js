@@ -17,7 +17,7 @@ const cacheSeconds = 60 * 15 // 15 minutes
  */
 
 const defaultFetchConfig = {
-  timeout: 3000,
+  timeout: 4000,
   size: 1024 * 100,
   redirect: 'follow',
   follow: 3
