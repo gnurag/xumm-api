@@ -23,6 +23,9 @@ const defaultFetchConfig = {
   follow: 3
 }
 
+// TODO:  move
+const payIdRe = new RegExp(/^(.*)\$([a-z0-9-_\.]+.*)$/i)
+
 const is = {
   possiblePackedAddress (query) {
     return query.match(/^[TX][a-zA-Z0-9]{20,}$/)
@@ -65,8 +68,9 @@ const is = {
      * Domain should be valid and IP should not be local
      * to prevent PayId based internal network attack
      */
-    if (new RegExp(/^\$[0-9a-z\._-]+/).test(query)) {
-      const payIdUrl = URL.parse(query.replace(/^\$/, 'https://'))
+    if (payIdRe.test(query)) {
+      const payIdParts = payIdRe.exec(query.toLowerCase())
+      const payIdUrl = URL.parse('https://' + payIdParts[2] + '/' + payIdParts[1].replace(/^\/+/, ''))
       if (typeof payIdUrl.host === 'string' && isValidDomain(payIdUrl.host)) {
         const resolved = await Promise.all([
           new Promise(resolve => {
@@ -280,7 +284,8 @@ const payId = {
     const source = 'payid'
     if (await is.possiblePayId(query)) {
       try {
-        const asUrl = URL.parse(query.replace(/^\$/, 'https://'))
+        const payIdParts = payIdRe.exec(query.toLowerCase())
+        const asUrl = URL.parse('https://' + payIdParts[2] + '/' + payIdParts[1].replace(/^\/+/, ''))
         const endpoint = asUrl.href + (
           asUrl.path === '/'
             ? '.well-known/pay'
