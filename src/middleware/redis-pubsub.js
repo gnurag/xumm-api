@@ -51,6 +51,12 @@ module.exports = async function (expressApp) {
 
       subRedis.destroy = () => {
         subRedis.unsubscribe(channel).then(() => {
+          try {
+            subRedis.disconnect()
+            log('Redis DISCONNECTED')
+          } catch (e) {
+            log('Redis DISCONNECT error', e.message)
+          }
           subRedis = null
         })
       }
