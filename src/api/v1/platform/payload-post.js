@@ -234,7 +234,7 @@ module.exports = async (req, res) => {
       /**
        * Never submit and never multisign for SignIn transactions
        */
-      if (Object.keys(req.body.txjson).indexOf('TransactionType') > -1 && req.body.txjson.TransactionType.toLowerCase() === 'signin') {
+      if (Object.keys(tx.json).indexOf('TransactionType') > -1 && tx.json.TransactionType.toLowerCase() === 'signin') {
         options.submit = options.multisign = 0
       }
 
