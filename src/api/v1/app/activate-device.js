@@ -18,7 +18,8 @@ module.exports = async (req, res) => {
         } else if (typeof req.body.devicePlatform === 'undefined') {
           throw new Error('Missing device information: devicePlatform')
         } else if (typeof req.body.devicePushToken === 'undefined') {
-          throw new Error('Missing device information: devicePushToken')
+          // This is allowed
+          // throw new Error('Missing device information: devicePushToken')
         }
 
         const deviceToActivateQuery = `
