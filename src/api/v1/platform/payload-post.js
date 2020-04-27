@@ -268,7 +268,7 @@ module.exports = async (req, res) => {
         }
       }
 
-      if (typeof req.body.user_token !== 'undefined' && req.body.user_token.match(uuidv4_format)) {
+      if (typeof req.body.user_token === 'string' && req.body.user_token.match(uuidv4_format)) {
         pushToken = await req.db(`
           SELECT 
             devices.device_pushtoken,
