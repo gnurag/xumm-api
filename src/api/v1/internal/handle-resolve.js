@@ -280,7 +280,7 @@ const xrpl = {
 }
 
 const payId = {
-  async get (query) {
+  async get (query, net) {
     const source = 'payid'
     if (await is.possiblePayId(query)) {
       try {
@@ -293,18 +293,27 @@ const payId = {
         )
         log('Lookup: payId', query, endpoint)
 
-        const lookupTypeHeaders = {
-          mainnet: 'application/xrpl-mainnet+json; charset=utf-8',
-          testnet: 'application/xrpl-testnet+json; charset=utf-8'
+        const lookupTypeHeaders = {}
+
+        if (net !== '') {
+          if (net.match(/main|live/)) {
+            Object.assign(lookupTypeHeaders, {mainnet: 'application/xrpl-mainnet+json; charset=utf-8'})
+          } else {
+            Object.assign(lookupTypeHeaders, {testnet: 'application/xrpl-testnet+json; charset=utf-8'})
+          }
+        } else {
+          Object.assign(lookupTypeHeaders, {
+            mainnet: 'application/xrpl-mainnet+json; charset=utf-8',
+            testnet: 'application/xrpl-testnet+json; charset=utf-8'  
+          })
         }
 
-        for (net in lookupTypeHeaders) {
-          log(net)
+        for (lookupNet in lookupTypeHeaders) {
           const call = await fetch(endpoint, {
             method: 'get',
             ...defaultFetchConfig,
             headers: {
-              'Accept': lookupTypeHeaders[net]
+              'Accept': lookupTypeHeaders[lookupNet]
             }    
           })
           const response = await call.json()
@@ -313,7 +322,7 @@ const payId = {
             if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
               if (response.addressDetails.address.match(/^[XT]/)) {
                 const decodedXaddress = taggedAddressCodec.Decode(response.addressDetails.address)
-                const resolvedPayIdDestination = await resolver.get(decodedXaddress.account)
+                const resolvedPayIdDestination = await resolver.get(decodedXaddress.account, net)
                 const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
                   return m.alias !== m.account
                 })
@@ -419,34 +428,42 @@ const app = {
 
 const resolver = {
   cache: {},
-  async get (query) {
+  async get (query, req) {
     /**
      * query = input, used for cache
      * lookupHandle = possibly decoded input, the value to work with
      *    eg. query = X address, lookupHandle = X address decoded to r-address
      */
     let lookupHandle = query
-    // TODO: check if lookupHandle is X / T address, if so: decode
+    let net = ''
+
+    if (typeof req.headers !== 'undefined' && Object.keys(req.headers).indexOf('x-xummnet') > 0) {
+      if (!req.headers['x-xummnet'].toLowerCase().trim().match(/main|live/)) {
+        net = req.headers['x-xummnet'].toLowerCase().trim()
+      }
+    }
+
+    const cacheKey = query + '@' + net
 
     const now = Math.round(new Date() / 1000)
-    if (typeof this.cache[query] === 'undefined' || this.cache[query].cached < now - cacheSeconds) {
-      this.cache[query] = {
+    if (typeof this.cache[cacheKey] === 'undefined' || this.cache[cacheKey].cached < now - cacheSeconds) {
+      this.cache[cacheKey] = {
         cached: now,
         explicitTests: {},
         matches: {}
       }
 
-      this.cache[query].explicitTests = {
+      this.cache[cacheKey].explicitTests = {
         emailAddress: is.validEmailAccount(lookupHandle),
         xrplAccount: is.possibleXrplAccount(lookupHandle)
       }
     
       const allApps = activeApps.reduce((stack, current) => {
-        stack.push(current.get(lookupHandle))
+        stack.push(current.get(lookupHandle, net))
         return stack
       }, [])
   
-      this.cache[query].matches = await Promise.all(allApps).then(r => {
+      this.cache[cacheKey].matches = await Promise.all(allApps).then(r => {
         return r.reduce((stack, current) => {
           current.forEach(c => stack.push(c))
           return stack
@@ -460,8 +477,8 @@ const resolver = {
     }
 
     return Object.assign({
-      live: now === this.cache[query].cached
-    }, this.cache[query])
+      live: now === this.cache[cacheKey].cached
+    }, this.cache[cacheKey])
   }
 }
 
@@ -493,7 +510,7 @@ module.exports = async (handle, req) => {
     }
   }
 
-  const resolved = await resolver.get(query)
+  const resolved = await resolver.get(query, req)
 
   return {
     input: handle,
