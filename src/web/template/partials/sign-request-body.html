@@ -62,13 +62,33 @@
                 {{ 'DASH_OR'|i18n }}
               </div>
             {% endif %}
+            {% if params.deeplink %}
+              <script src="/assets/js/clipboard.min.js"></script>
+              <p class="text-muted">
+                {{ 'COPY_REQUEST_LINK_SOMEAPPS'|i18n }}
+              </p>
+              <p class="text-muted">
+                {{ 'COPY_REQUEST_LINK_IF'|i18n }}
+              </p>
+              <div class="text-center">
+                <button data-clipboard-text="https://{{ deeplinkRedirectLocation }}/{{ uuid }}" class="mb-4 btn btn-outline-primary">
+                  <i class="fad fa-copy fa"></i>
+                  {{ 'COPY_REQUEST_LINK'|i18n }}
+                </button>
+              </div>
+              <div class="text-muted text-center">
+                {{ 'DASH_OR'|i18n }}
+              </div>
+              <script>
+                var clipboard = new ClipboardJS('[data-clipboard-text]')
+                clipboard.on('success', function (e) {
+                  e.trigger.querySelector('i.fa').setAttribute('class', 'fa fas fa-check')
+                })
+              </script>
+            {% endif %}
             <div class="h5 text-center py-3">
               <i class="fas fa-mobile-alt"></i>
-              {% if not params.deeplink %}
-                {{ 'INSTALL_APP'|i18n }}
-              {% else %}
-                {{ 'PLEASE_INSTALL_APP'|i18n }}
-              {% endif %}
+              {{ 'INSTALL_APP'|i18n }}
             </div>
             <div class="text-center">
               {% if is.ios %}

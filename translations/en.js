@@ -21,19 +21,19 @@ module.exports = {
   REQUEST_DETAILS_IN_APP: `Request details will be visible in the <b class="font-logo">xumm</b> app after scanning the QR code.`,
   WAIT_OPEN: `Waiting for you to open the 
                   <code class="text-primary"><b class="text-primary"><q>__txtype__</q></b></code>
-                  request with the XUMM app.`,
+                  request with the <b class="font-logo">xumm</b> app.`,
   WAIT_SCAN_QR: `Waiting for you to scan the 
                   <code class="text-primary"><b class="text-primary"><q>__txtype__</q></b></code>
-                  request with the XUMM app.`,
+                  request with the <b class="font-logo">xumm</b> app.`,
   WAIT_SCAN_QR_DETAILED: `Waiting for you to scan and open the 
                             <code class="text-primary"><b class="text-primary">__txtype__</b></code>
                           to 
                             <code class="text-primary"><b>__txdestination__</b></code>
-                          with the XUMM app.`,
+                          with the <b class="font-logo">xumm</b> app.`,
   WAIT_FOR_RESOLVE: `Waiting for you to resolve (accept / deny) the 
                       <code class="text-primary"><b class="text-primary"><q>__txtype__</q></b></code>
                       request in XUMM app. After signing and successful submission this message will be updated.`,
-  SHOW_TRANSACTION: `Show raw request (advanced)`,
+  SHOW_TRANSACTION: `Show raw <b class="font-logo">xumm</b> (advanced)`,
   RESOLVED: `The sign request has been signed succesfully.`,
   RESOLVED_NEXT_RETURN: `You will return to <q><b>__appname__</b></q> in a few seconds`,
   REJECTED: `The sign request has been rejected.`,
@@ -52,7 +52,9 @@ module.exports = {
   DIDNT_RECEIVE_PUSH_TEXT: `Didn't receive the push message?`,
   SHOW_QR: `Scan a QR code instead`,
   OPEN_IN_XUMM: 'Open in the <b class="font-logo">xumm</b> App',
-  PLEASE_INSTALL_APP: `Please install <b class="font-logo">xumm</b>`,
+  COPY_REQUEST_LINK: `Copy link to this request`,
+  COPY_REQUEST_LINK_SOMEAPPS: `Some mobile appsactively prevent other apps to be opened.`,
+  COPY_REQUEST_LINK_IF: `If this is the case, please copy a link to this page with the button below and open it in your mobile browser.`,
   DASH_OR: '-or-',
   INSTALL_APP: `Install <b class="font-logo">xumm</b>`,
   TITLE_TX_SCANNED: `Opened in <b class="font-logo">xumm</b>`,
