@@ -45,7 +45,9 @@ class apiExtension {
           context.ctx.results = await apis[method](param || args, expressApp, invoker) // Assign before rendering body()
 
           if (method === 'payloadData') {
-            context.ctx.results.__formatted = payloadDataFormatter(context.ctx.results, { meta: {} })
+            if (context.ctx.results) {
+              context.ctx.results.__formatted = payloadDataFormatter(context.ctx.results, { meta: {} })
+            }
           }
 
           response = new nunjucks.runtime.SafeString(body())
