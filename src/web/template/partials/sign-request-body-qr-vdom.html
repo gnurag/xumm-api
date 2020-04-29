@@ -115,6 +115,9 @@
           <i class="d-none d-sm-inline-block fa fa-arrow-left"></i>
           {{ 'SCAN_WITH_APP'|i18n }}
         </h1>
+        <h6 class="font-weight-bold- text-secondary" v-if="!opened && !resolved && !options.onlyMonitorSigning">
+          {{ 'REQUEST_DETAILS_IN_APP'|i18n }}
+        </h6>
 
         <h1 class="h4 text-primary font-weight-normal" v-if="opened && !resolved && !options.onlyMonitorSigning">
           <i class="fa fa-check"></i>
@@ -125,7 +128,7 @@
           <div v-cloak>
             <div class="pt-2 pb-0 mb-0">
               {% endraw %}
-                <div class="text-muted pb-3" v-if="!opened && !resolved">
+                <div class="text-muted- text-dark font-weight-bold pb-3" v-if="!opened && !resolved">
                   <div v-if="!options.onlyMonitorSigning">
                     <i class="fas fa-circle-notch fa-spin"></i>
                     {% if results.payload_tx_type == 'Payment' %}
@@ -146,7 +149,7 @@
                     }) }}
                   </div>
                 </div>
-                <div class="text-muted" v-if="opened && !resolved">
+                <div class="text-muted- text-dark" v-if="opened && !resolved">
                   <i class="fas fa-circle-notch fa-spin"></i>
                   {{ 'WAIT_FOR_RESOLVE'|i18n({ 
                     txtype: results.payload_tx_type
@@ -155,11 +158,13 @@
               {% raw %}
             </div>
 
-            <div class="text-center">
-              <button v-show="!showTx && !opened && !resolved" @click="showRawTx()" class="btn btn-sm btn-block btn-light">
-                <i class="fas fa-stream"></i>
-                {% endraw %}{{ 'SHOW_TRANSACTION'|i18n }}{% raw %}
-              </button>
+            <div class="text-right">
+              <small>
+                <a v-show="!showTx && !opened && !resolved" @click="showRawTx()" class="show-sign-request text-muted">
+                  <i class="fas fa-stream"></i>
+                  {% endraw %}<span>{{ 'SHOW_TRANSACTION'|i18n }}</span>{% raw %}
+                </a>
+              </small>
             </div>
 
             <transition name="fade">

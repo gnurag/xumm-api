@@ -18,6 +18,7 @@ module.exports = {
   PAYLOAD_PAGE_FOR_MOBILE: `To sign a request, make sure you have the <b class="font-logo">xumm</b> app installed.`,
   APPLICATION_DISABLED: `The application <q><b>__appname__</b></q> is disabled.`,
   WAIT_CONNECT_PLATFORM: `Connecting to the Signing Platform.`,
+  REQUEST_DETAILS_IN_APP: `Request details will be visible in the <b class="font-logo">xumm</b> app after scanning the QR code.`,
   WAIT_OPEN: `Waiting for you to open the 
                   <code class="text-primary"><b class="text-primary"><q>__txtype__</q></b></code>
                   request with the XUMM app.`,
@@ -32,7 +33,7 @@ module.exports = {
   WAIT_FOR_RESOLVE: `Waiting for you to resolve (accept / deny) the 
                       <code class="text-primary"><b class="text-primary"><q>__txtype__</q></b></code>
                       request in XUMM app. After signing and successful submission this message will be updated.`,
-  SHOW_TRANSACTION: `Show sign request`,
+  SHOW_TRANSACTION: `Show raw request (advanced)`,
   RESOLVED: `The sign request has been signed succesfully.`,
   RESOLVED_NEXT_RETURN: `You will return to <q><b>__appname__</b></q> in a few seconds`,
   REJECTED: `The sign request has been rejected.`,
