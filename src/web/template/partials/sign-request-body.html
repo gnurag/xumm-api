@@ -80,6 +80,7 @@
                 {{ 'DASH_OR'|i18n }}
               </div>
               <script>
+                history.replaceState(null, document.title, '/sign/{{ uuid }}')
                 var clipboard = new ClipboardJS('[data-clipboard-text]')
                 clipboard.on('success', function (e) {
                   e.trigger.querySelector('i.fa').setAttribute('class', 'fa fas fa-check')
