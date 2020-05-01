@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const log = require('debug')('app:advisory')
+const getConfig = require('../../../middleware/config')
 
 const ttlSeconds = 60 * 15 * 4 // Update every 15 minutes * 4 = 60 min = 1 hour
 
@@ -18,10 +19,22 @@ const advisoryData = {
 
 const updateAdvisory = async () => {
   advisoryData.updating = true
-
+  log('Advisory data updating (XRPForensics)')
+  
   try {
+    const config = await getConfig()
+    const authCall = await fetch('https://api.xrplorer.com/v1/auth', {
+      headers: {'Content-type': 'application/json'},
+      method: 'post',
+      timeout: 10000,
+      redirect: 'follow',
+      follow: 3,
+      body: JSON.stringify(config.xrpForensicsApi || {})
+    })
+    const authData = await authCall.json()
+
     const data = await fetch('https://api.xrplorer.com/v1/advisorylist', {
-      headers: {},
+      headers: {Authorization: 'Bearer ' + authData.access_token || ''},
       method: 'get',
       timeout: 10000,
       redirect: 'follow',
@@ -35,6 +48,8 @@ const updateAdvisory = async () => {
 
     advisoryData.update = Math.round(new Date() / 1000)
     advisoryData.updating = false
+
+    log('   > Advisory data updated, #accounts: ', Object.keys(json).length)
 
     Object.assign(advisoryData.accounts, json)
 

@@ -15,6 +15,11 @@
     "host": "127.0.0.1",
     "port": 6379
   },
+  "mattermostHooks": "https://xxx",
+  "xrpForensicsApi": {
+    "username": "xxx",
+    "password": "xxx"
+  },
   "deeplinkRedirectLocation": "xumm.local",
   "userProfileLocation": "profiles.xumm.local",
   "TosAndPrivacyPolicyVersion": 1,
