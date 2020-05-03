@@ -1,7 +1,9 @@
 module.exports = async function (expressApp) {
   expressApp.use((req, res, next) => {
-
-    if (typeof req.headers['accept'] !== 'undefined' && req.headers['accept'].match(/application\/xrpl-/i)) {
+    if (typeof req.headers['accept'] !== 'undefined' &&
+      req.headers['accept'].match(/application\/xrpl-/i) &&
+      req.hostname === req.config.userProfileLocation
+    ) {
       req.routeType = 'payid'
     } else if (typeof req.headers['content-type'] !== 'undefined' && req.headers['content-type'].match(/application\/json/i)) {
       req.routeType = 'api'
