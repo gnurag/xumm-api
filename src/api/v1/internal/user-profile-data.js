@@ -80,7 +80,11 @@ module.exports = async (userSlug, PayId, db) => {
         if (sorted.length > 0) {
           returnAccount = {
             account: sorted[0].useraccount_account,
-            name: sorted[0].user_name + ' ' + sorted[0].useraccount_slug.replace(/^(.)/, _ => { return _.toUpperCase() })
+            name: sorted[0].user_name + (
+              sorted[0].useraccount_slug
+                ? ' (' + sorted[0].useraccount_slug.replace(/^(.)/, _ => { return _.toUpperCase() }) + ')'
+                : ''
+            }
           }
         }
       }
