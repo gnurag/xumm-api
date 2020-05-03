@@ -1,7 +1,7 @@
 // const Levenshtein = require('levenshtein')
 const stringSimilarity = require('string-similarity')
 const humanize = require('humanize-string')
-// const log = require('@src/handler/log')('app:userprofile')
+const log = require('@src/handler/log')('app:userprofile')
 
 // TODO: Tests
 
@@ -14,7 +14,7 @@ module.exports = async (userSlug, PayId, db) => {
   }
 
   if (typeof PayId === 'string') {
-    payid = decodeURI(PayId)
+    payid = decodeURI(PayId).split('$')[0]
     slug = payid.split('+')[0]
     // log({payid, slug})
 
@@ -28,7 +28,9 @@ module.exports = async (userSlug, PayId, db) => {
             CONCAT('+', useraccounts.useraccount_slug)
           )
         ) as __full_slug,
-        useraccounts.useraccount_account
+        useraccounts.useraccount_account,
+        users.user_name,
+        useraccounts.useraccount_slug
       FROM
         users
       LEFT JOIN
@@ -53,7 +55,11 @@ module.exports = async (userSlug, PayId, db) => {
       if (match.length === 1) {
         returnAccount = {
           account: match[0].useraccount_account,
-          name: slug
+          name: match[0].user_name + (
+            match[0].useraccount_slug
+              ? ' (' + match[0].useraccount_slug.replace(/^(.)/, _ => { return _.toUpperCase() }) + ')'
+              : ''
+          )
         }
       } else {
         // Check distance
@@ -74,17 +80,17 @@ module.exports = async (userSlug, PayId, db) => {
         if (sorted.length > 0) {
           returnAccount = {
             account: sorted[0].useraccount_account,
-            name: sorted[0].__full_slug.replace(/\+/g, ' ')
+            name: sorted[0].user_name + ' ' + sorted[0].useraccount_slug.replace(/^(.)/, _ => { return _.toUpperCase() })
           }
         }
       }
     }
 
-    if (typeof returnAccount.name === 'string') {
-      returnAccount.name = humanize(returnAccount.name)
-        .replace(/\s(.)/g, $1 => { return $1.toUpperCase() })
-        .replace(/^(.)/, $1 => { return $1.toUpperCase() })
-    }
+    // if (typeof returnAccount.name === 'string') {
+    //   returnAccount.name = humanize(returnAccount.name)
+    //     .replace(/\s(.)/g, $1 => { return $1.toUpperCase() })
+    //     .replace(/^(.)/, $1 => { return $1.toUpperCase() })
+    // }
 
     return returnAccount
   }

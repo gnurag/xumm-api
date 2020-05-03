@@ -332,8 +332,9 @@ const payId = {
                   ? resolvedAliasses[0].alias
                   : query
 
-                if (query.match(/xumm\.me$/)) {
+                if (new RegExp(app.config.userProfileLocation + '$').test(query)) {
                   returnAccount = await payIdProfile('', query, app.db)
+                  // log({query, returnAccount})
                   if (typeof returnAccount === 'object' && returnAccount !== null) {
                     alias = returnAccount.name || alias
                   }
