@@ -45,10 +45,13 @@ module.exports = async function (expressApp) {
       returnAccount = await userProfile(slug, payid, req.db)
 
       if (typeof returnAccount === 'object' && returnAccount !== null && typeof returnAccount.account === 'string') {
+        const account = returnAccount.account.split(':')[0].trim()
+        const tag = returnAccount.account.split(':')[1] || null
+        // log({account, tag})
         res.json({
           addressDetailType: 'CryptoAddressDetails',
           addressDetails: {
-            address: xTagged.Encode({account: returnAccount.account, tag: null, test: !req.isMainNet})
+            address: xTagged.Encode({account, tag, test: !req.isMainNet})
           }
         })  
       } else {
