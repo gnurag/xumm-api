@@ -25,6 +25,7 @@ async function start () {
     { type: 'handler', module: 'web' },
     { type: 'handler', module: 'api' },
     { type: 'handler', module: 'wss' },
+    { type: 'handler', module: 'payid' },
     { type: 'middleware', module: 'error-handler' },
     { type: 'middleware', module: 'redis-pubsub' },
   ]
