@@ -1,4 +1,4 @@
-const log = require('debug')('app:api')
+const log = require('@src/handler/log')('app:api')
 
 const express = require('express')
 const bodyParser = require('body-parser')

@@ -1,4 +1,4 @@
-const log = require('debug')('app:curatedious')
+const log = require('@src/handler/log')('app:curatedious')
 
 module.exports = async (req, res) => {
   try {

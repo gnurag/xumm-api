@@ -1,5 +1,5 @@
 const fetch = require('node-fetch')
-const log = require('debug')('app:handle-resolve')
+const log = require('@src/handler/log')('app:handle-resolve')
 const knownAccount = require('@api/v1/internal/known-account-hydrate')
 const utf8 = require('utf8')
 const taggedAddressCodec = require('xrpl-tagged-address-codec')

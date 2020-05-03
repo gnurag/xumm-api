@@ -1,4 +1,4 @@
-const log = require('debug')('app:ping')
+const log = require('@src/handler/log')('app:ping')
 const getBadgeCount = require('@api/v1/internal/get-user-badge-count')
 
 module.exports = async (req, res) => {

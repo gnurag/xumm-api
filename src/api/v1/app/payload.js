@@ -1,5 +1,5 @@
-const log = require('debug')('app:payload-api')
-const logChild = log.extend('child')
+// const log = require('@src/handler/log')('app:payload-api')
+const logChild = require('@src/handler/log')('app:payload-api:child')
 const getPayloadData = require('@api/v1/internal/payload-data')
 const formatPayloadData = require('@api/v1/internal/payload-data-formatter')
 const codec = require('ripple-binary-codec')

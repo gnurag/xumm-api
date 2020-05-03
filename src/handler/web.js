@@ -1,4 +1,4 @@
-const log = require('debug')('app:web')
+const log = require('@src/handler/log')('app:web')
 
 const translations = require('@src/global/translations')
 const express = require('express')

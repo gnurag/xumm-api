@@ -1,4 +1,4 @@
-// const log = require('debug')('app:payload:get')
+// const log = require('@src/handler/log')('app:payload:get')
 const getPayloadData = require('@api/v1/internal/payload-data')
 const formatPayloadData = require('@api/v1/internal/payload-data-formatter')
 

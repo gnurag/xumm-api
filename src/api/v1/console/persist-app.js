@@ -1,4 +1,4 @@
-// const log = require('debug')('app:devconsole:persist')
+// const log = require('@src/handler/log')('app:devconsole:persist')
 const uuid = require('uuid/v4')
 const getAuth0User = require('@src/api/v1/internal/getAuth0User')
 const checkDea = require('@src/api/v1/internal/checkDea')

@@ -1,5 +1,5 @@
-const log = require('debug')('app:payload:post')
-const logChild = log.extend('child')
+const log = require('@src/handler/log')('app:payload:post')
+const logChild = require('@src/handler/log')('app:payload:post:child')
 const { fork } = require('child_process')
 
 module.exports = async (req, res) => {

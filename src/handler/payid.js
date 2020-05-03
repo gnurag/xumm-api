@@ -1,11 +1,10 @@
-const log = require('debug')('app:payid')
+const log = require('@src/handler/log')('app:payid')
 const xTagged = require('xrpl-tagged-address-codec')
-const Levenshtein = require('levenshtein')
+const userProfile = require('@src/api/v1/internal/user-profile-data')
 
 const express = require('express')
 const router = express.Router()
 
-// TODO: move to API's
 // TODO: tests
 
 module.exports = async function (expressApp) {
@@ -38,69 +37,25 @@ module.exports = async function (expressApp) {
 
   router.get('/:payid(*)', async (req, res, next) => {
     // return next()
-    const slug = req.sanitizedPath.slice(1).split('+')[0]
     const payid = req.sanitizedPath.slice(1)
-
-    const accounts = await expressApp.db(`
-      SELECT
-        CONCAT(
-          users.user_slug,
-          IF(
-            useraccounts.useraccount_slug IS NULL,
-            '',
-            CONCAT('+', useraccounts.useraccount_slug)
-          )
-        ) as __full_slug,
-        useraccounts.useraccount_account
-      FROM
-        users
-      LEFT JOIN
-        useraccounts ON (
-          users.user_id = useraccounts.user_id
-        )
-      WHERE
-        users.user_slug = :slug
-        AND
-        useraccounts.useraccount_allowlookup = 1
-    `, {
-      slug
-    })
+    const slug = payid.split('+')[0]
 
     let returnAccount
-    if (accounts.length > 0) {
-      const match = accounts.filter(a => {
-        return a.__full_slug === payid
-      })
-      if (match.length === 1) {
-        returnAccount = match[0].useraccount_account
-      } else {
-        // Check distance
-        const sorted = accounts.map(a => {
-          return Object.assign({}, {
-            ...a,
-            levenshtein: new Levenshtein(payid, a.__full_slug).distance
-          })
-        })
-        .filter(a => {
-          return a.levenshtein <= 3
-        })
-        .sort((a, b) => {
-          return a.levenshtein - b.levenshtein
-        })
-        if (sorted.length > 0) {
-          returnAccount = sorted[0].useraccount_account
-        }
-      }
-    }
+    try {
+      returnAccount = await userProfile(slug, payid, req.db)
 
-    if (returnAccount) {
-      res.json({
-        addressDetailType: 'CryptoAddressDetails',
-        addressDetails: {
-          address: xTagged.Encode({account: returnAccount, tag: null, test: !req.isMainNet})
-        }
-      })  
-    } else {
+      if (typeof returnAccount === 'string' && returnAccount !== '') {
+        res.json({
+          addressDetailType: 'CryptoAddressDetails',
+          addressDetails: {
+            address: xTagged.Encode({account: returnAccount, tag: null, test: !req.isMainNet})
+          }
+        })  
+      } else {
+        next()
+      }
+    } catch (e) {
+      log(' >>>> ! PayId Request Error', e)
       next()
     }
 

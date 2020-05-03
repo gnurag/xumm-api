@@ -1,4 +1,4 @@
-const log = require('debug')('app:get-badge-count')
+const log = require('@src/handler/log')('app:get-badge-count')
 const getUserIdByDestination = require('@api/v1/internal/destination-to-userid')
 
 module.exports = async (destination, db) => {

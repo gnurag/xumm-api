@@ -1,5 +1,5 @@
-const log = require('debug')('app:push-badge')
-const logChild = log.extend('child')
+const log = require('@src/handler/log')('app:push-badge')
+const logChild = require('@src/handler/log')('app:push-badge:child')
 const { fork } = require('child_process')
 
 const getUserIdByDestination = require('@api/v1/internal/destination-to-userid')

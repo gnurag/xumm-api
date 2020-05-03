@@ -1,4 +1,4 @@
-// const log = require('debug')('app:payload:cancel')
+// const log = require('@src/handler/log')('app:payload:cancel')
 const getPayload = require('@api/v1/platform/payload-get')
 const updatePushBadge = require('@api/v1/internal/update-push-badge')
 
