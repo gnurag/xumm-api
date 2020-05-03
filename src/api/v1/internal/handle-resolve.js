@@ -25,7 +25,7 @@ const defaultFetchConfig = {
 }
 
 // TODO:  move
-const payIdRe = new RegExp(/^(.*)\$([a-z0-9-_\.]+.*)$/i)
+const payIdRe = new RegExp(/^(.*)[\$@]([a-z0-9-_\.]+.*)$/i)
 
 const is = {
   possiblePackedAddress (query) {
