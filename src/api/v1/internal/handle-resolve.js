@@ -9,6 +9,7 @@ const URL = require('url')
 const isValidDomain = require('is-valid-domain')
 const ip = require('ip')
 const dns = require('dns')
+const payIdProfile = require('@src/api/v1/internal/user-profile-data')
 
 const cacheSeconds = 60 * 15 // 15 minutes
 
@@ -326,13 +327,22 @@ const payId = {
                 const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
                   return m.alias !== m.account
                 })
+
+                let alias = resolvedAliasses.length > 0
+                  ? resolvedAliasses[0].alias
+                  : query
+
+                if (query.match(/xumm\.me$/)) {
+                  returnAccount = await payIdProfile('', query, app.db)
+                  if (typeof returnAccount === 'object' && returnAccount !== null) {
+                    alias = returnAccount.name || alias
+                  }
+                }
                 
                 return [{
                   source,
                   network: null,
-                  alias: resolvedAliasses.length > 0
-                    ? resolvedAliasses[0].alias
-                    : query,
+                  alias,
                   account: decodedXaddress.account,
                   tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
                   description: query

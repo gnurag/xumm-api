@@ -1,4 +1,6 @@
-const Levenshtein = require('levenshtein')
+// const Levenshtein = require('levenshtein')
+const stringSimilarity = require('string-similarity')
+const humanize = require('humanize-string')
 // const log = require('@src/handler/log')('app:userprofile')
 
 // TODO: Tests
@@ -12,9 +14,9 @@ module.exports = async (userSlug, PayId, db) => {
   }
 
   if (typeof PayId === 'string') {
-    payid = PayId
+    payid = decodeURI(PayId)
     slug = payid.split('+')[0]
-    // log(slug)
+    // log({payid, slug})
 
     const accounts = await db(`
       SELECT
@@ -40,33 +42,50 @@ module.exports = async (userSlug, PayId, db) => {
     `, {
       slug
     })
+    
+    // log({accounts})
 
-    let returnAccount = ''
+    let returnAccount = {}
     if (accounts.length > 0) {
       const match = accounts.filter(a => {
         return a.__full_slug === payid
       })
       if (match.length === 1) {
-        returnAccount = match[0].useraccount_account
+        returnAccount = {
+          account: match[0].useraccount_account,
+          name: slug
+        }
       } else {
         // Check distance
         const sorted = accounts.map(a => {
           return Object.assign({}, {
             ...a,
-            levenshtein: new Levenshtein(payid, a.__full_slug).distance
+            __sim: stringSimilarity.compareTwoStrings(payid, a.__full_slug)
           })
         })
         .filter(a => {
-          return a.levenshtein <= 3
+          return a.__sim > .7
         })
         .sort((a, b) => {
-          return a.levenshtein - b.levenshtein
+          return b.__sim - a.__sim
         })
+
+        // log({sorted})
         if (sorted.length > 0) {
-          returnAccount = sorted[0].useraccount_account
+          returnAccount = {
+            account: sorted[0].useraccount_account,
+            name: sorted[0].__full_slug.replace(/\+/g, ' ')
+          }
         }
       }
     }
+
+    if (typeof returnAccount.name === 'string') {
+      returnAccount.name = humanize(returnAccount.name)
+        .replace(/\s(.)/g, $1 => { return $1.toUpperCase() })
+        .replace(/^(.)/, $1 => { return $1.toUpperCase() })
+    }
+
     return returnAccount
   }
 
