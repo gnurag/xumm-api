@@ -79,11 +79,6 @@
     "dev": "clear; DEBUG=app:* nodemon .",
     "inspect": "clear; echo 'OPEN: chrome://inspect --- ' && DEBUG=app:* node --inspect .",
     "pm2": "pm2 reload pm2.config.js --env development",
-    "start": "docker-compose up -d",
-    "up": "docker-compose up -d",
-    "down": "docker-compose down",
-    "stop": "docker-compose down",
-    "logs": "docker-compose logs --tail 30 -f",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true",
     "postinstall": "link-module-alias",
     "test": "jest --ci --verbose --runInBand"
