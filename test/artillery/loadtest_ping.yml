@@ -1,0 +1,22 @@
+config:
+  target: "http://localhost:3001"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 100
+      name: "Ramping up the load"
+    - duration: 120
+      arrivalRate: 100
+      rampTo: 300
+      name: "Pushing a constant load"
+scenarios:
+  - flow:
+    - log: "Call PING"
+    - post:
+        url: "/api/v1/app/ping"
+        json:
+          appLanguage: "EN"
+          appVersion: "1.2.9"
+        headers:
+          Authorization: "Bearer d46b98bf-cd75-4a12-ac74-ffc572478849.128.9a76639d581d36b038bb785ef4fbd7700137490dd2125abeba04de76546ad9e4"
+      

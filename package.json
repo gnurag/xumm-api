@@ -80,7 +80,8 @@
     "dev": "clear; DEBUG=app:* nodemon .",
     "inspectlocal": "clear; echo 'OPEN: chrome://inspect --- ' && DEBUG=app:* node --inspect .",
     "inspectprod": "DEBUG=app:* NODE_ENV=production PORT=3000 node --inspect=0.0.0.0:9229 index.js",
-    "pm2": "pm2 reload pm2.config.js --env development",
+    "pm2": "DEBUG=app:* pm2 reload pm2.config.js --env development",
+    "pm2nodebug": "pm2 reload pm2.config.js --env devnodebug",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true",
     "postinstall": "link-module-alias",
     "test": "jest --ci --verbose --runInBand"

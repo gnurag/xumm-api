@@ -11,6 +11,10 @@ module.exports = {
       NODE_ENV: 'development',
       PORT: 3001
     },
+    env_devnodebug: {
+      NODE_ENV: 'development',
+      PORT: 3001
+    },
     env_production: {
       DEBUG: 'app:*',
       NODE_ENV: 'production',
