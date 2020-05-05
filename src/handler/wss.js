@@ -2,9 +2,10 @@ const logws = require('@src/handler/log')('app:web:ws')
 const jwt = require('../middleware/auth/devconsole-jwt')
 
 const express = require('express')
+const expressWs = require('express-ws')
 
 module.exports = async function (expressApp) {
-  require('express-ws')(expressApp)
+  expressWs(expressApp)
 
   /**
    * WebSocket Router

@@ -1,8 +1,8 @@
 const nunjucks = require('nunjucks')
-const apis = {
-  payloadData: require('@api/v1/internal/payload-data'),
-  userProfile: require('@api/v1/internal/user-profile-page-lookup')
-}
+const payloadData = require('@api/v1/internal/payload-data')
+const userProfile = require('@api/v1/internal/user-profile-page')
+const apis = {payloadData, userProfile}
+
 const payloadDataFormatter = require('@api/v1/internal/payload-data-formatter')
 
 class apiExtension {
