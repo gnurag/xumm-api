@@ -3,6 +3,7 @@ const log = require('@src/handler/log')('app:api')
 const express = require('express')
 const bodyParser = require('body-parser')
 const uuid = require('uuid/v4')
+const isError = require('iserror')
 
 module.exports = async function (expressApp) {
   expressApp.use(bodyParser.json())
@@ -12,15 +13,41 @@ module.exports = async function (expressApp) {
    * API Error handler
    */
 
-  const errorHandler = async (e, req, res) => {
-    // TODO: migrate to module
+  const sendErrorToBugsnag = (e, req) => {
+    // expressApp.bugsnagClient.notify
+    //isError
     if (typeof expressApp.config.bugsnagKey !== 'undefined') {
       if (typeof expressApp.bugsnagClient !== 'undefined') {
-        expressApp.bugsnagClient.notify(e.causingError || e, {
-          metaData: req.__auth || {}
+        let error = e
+        if (typeof e.causingError !== 'undefined' && e.causingError !== null) {
+          error = e.causingError
+        }
+        if (!isError(error)) {
+          error = Object.assign(new Error(error.message || error), e)
+        }
+        expressApp.bugsnagClient.notify(error, event => {
+          event.addMetadata('xumm', {
+            auth: req.__auth || {},
+            hostname: req.hostname || '',
+            router: req.routeType || '',
+            url: req.originalUrl || '',
+            method: req.method || '',
+            ip: req.remoteAddress || '',
+            headers: req.headers || []
+          })
+          if (typeof req.body === 'object' || typeof req.body === 'string') {
+            event.addMetadata('body', {
+              body: req.body
+            })
+          }
         })
       }
     }
+  }
+
+  const errorHandler = async (e, req, res) => {
+    // TODO: migrate to module
+    sendErrorToBugsnag(e, req)
 
     const errorRef = res.get('X-Call-Ref') || uuid()
     const code = parseInt(((e.code || '') + '').replace(/[^0-9]/g, ''))
@@ -225,7 +252,7 @@ module.exports = async function (expressApp) {
                      */
                     if (typeof expressApp.config.bugsnagKey !== 'undefined') {
                       if (typeof expressApp.bugsnagClient !== 'undefined') {
-                        expressApp.bugsnagClient.notify(e)
+                        sendErrorToBugsnag(e, req)
                       }
                     }                      
                     res.status(500).json({ 

@@ -1,14 +1,19 @@
 module.exports = async function (expressApp) {
-  if (typeof expressApp.config.bugsnagKey !== 'undefined' && expressApp.config.__env.slice(0, 4).toLowerCase() === 'prod') {
-    const bugsnagClient = require('@bugsnag/js')({
+  if (typeof expressApp.config.bugsnagKey !== 'undefined') {
+    //  && expressApp.config.__env.slice(0, 4).toLowerCase() === 'prod'
+    const bugsnag = require('@bugsnag/js')
+    const bugsnagExpress = require('@bugsnag/plugin-express')
+
+    const bugsnagClient = bugsnag.start({
       apiKey: expressApp.config.bugsnagKey,
+      autoTrackSessions: false,
       releaseStage: expressApp.config.__env || 'dev',
-      filters: [
+      redactedKeys: [
         /^secret$/i,
         /^authorization$/i
-      ]
+      ],
+      plugins: [bugsnagExpress]
     })
-    bugsnagClient.use(require('@bugsnag/plugin-express'))
     const middleware = bugsnagClient.getPlugin('express')
     expressApp.use(middleware.requestHandler)
     expressApp.use(middleware.errorHandler)

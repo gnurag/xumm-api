@@ -175,7 +175,7 @@ module.exports = async function (expressApp) {
   expressApp.set('view engine', 'html')
 
   const env = nunjucks.configure([ 'public_html', 'src/web/template' ], {
-    noCache:  expressApp.config.mode === 'development',
+    noCache: expressApp.config.mode === 'development',
     watch: expressApp.config.mode === 'development',
     autoescape: true,
     express: expressApp
