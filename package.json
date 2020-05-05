@@ -77,7 +77,8 @@
   },
   "scripts": {
     "dev": "clear; DEBUG=app:* nodemon .",
-    "inspect": "clear; echo 'OPEN: chrome://inspect --- ' && DEBUG=app:* node --inspect .",
+    "inspectlocal": "clear; echo 'OPEN: chrome://inspect --- ' && DEBUG=app:* node --inspect .",
+    "inspectprod": "DEBUG=app:* NODE_ENV=production PORT=3000 node --inspect=0.0.0.0:9229 index.js",
     "pm2": "pm2 reload pm2.config.js --env development",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true",
     "postinstall": "link-module-alias",
