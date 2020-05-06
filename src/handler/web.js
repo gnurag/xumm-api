@@ -62,6 +62,7 @@ module.exports = async function (expressApp) {
 
   router.get('/app/webviews/:type([a-zA-Z0-9-]+)/:language([a-zA-Z_-]+)?', (req, res, next) => {
     return res.render('webviews/' + req.params.type + '/index.html', {
+      ...req.query,
       module: 'webviews',
       mode: req.config.mode,
       version: req.config.TosAndPrivacyPolicyVersion || 1,

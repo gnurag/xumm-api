@@ -1,0 +1,44 @@
+{% extends 'webviews/template.html' %}
+
+{% block content %}
+<style>
+  .alert-danger {
+    border-radius: 12px !important; background: #FFF9F9 !important; border: none !important; color: #FF5B5B !important;
+  }
+  .alert-primary {
+    border-radius: 12px !important; background: #F0F3FF !important; border: none !important; color: #3052FF !important;
+  }
+</style>
+
+{# <h3>{{ 'INAPP_TITLE_TOS_PRIVACY'|i18n }}</h3> #}
+{% if update %}
+  <p class="alert alert-primary text-center px-3 py-3">
+    <b>
+      Version {{ update }} - Release notes
+    </b>
+  </p>
+
+  <ul class="pl-3 ml-2 mr-1">
+    <li class="pb-2">Improvement X</li>
+    <li class="pb-2">New feature Y</li>
+    <li class="pb-2">Bugfix Z</li>
+  </ul>
+{% else %}
+  <p class="alert alert-danger text-center">
+    Error loading release notes.
+  </p>
+{% endif %}
+
+{% endblock %}
+
+{% block head %}
+{#
+<script>
+  (function() {
+    if (typeof window.ReactNativeWebView !== 'undefined') {
+      window.ReactNativeWebView.postMessage(JSON.stringify({version: {{version|default(1)}}}))
+    }
+  })()
+</script>
+#}
+{% endblock %}
