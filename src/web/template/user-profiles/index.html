@@ -33,10 +33,59 @@
         <img src="/assets/images/user-profiles/icon-profile.png" style="max-width: 70%;" alt="" />
       </div>
 
-      <div class="card shadow px-3 pt-2 pb-0 text-center">
+      <div class="card shadow px-3 pt-2 pb-0 text-center mt-0">
         <div class="card-body pb-3">
-          <h3>XUMM user profile pages are not implemented yet.</h3>
-          <pre class="text-primary">{{ results|dump }}</pre>
+          <div class="alert alert-warning text-center py-2">
+            Please note: XUMM user profiles are not available yet.
+          </div>
+          {% if results.profile.slug %}
+            <div class="text-left mt-4">
+              <h3>
+                {{ results.profile.name|default(results.profile.slug) }}
+                {% if results.profile.name or results.profile.name !== results.profile.slug %}
+                  <code class="pl-1 text-primary"><small>{{ results.profile.slug }}${{ hostname }}</small></code>
+                {% endif %}
+              </h3>
+              
+              {% if results.profile.name or results.profile.name !== results.profile.slug %}
+                <p class="text-muted">{{ results.profile.intro }}</p>
+
+                {% if results.accounts.length > 0 %}
+                  <h5>Accounts</h5>
+                  {% for a in results.accounts %}
+                    <div class="card mt-2 shadow-sm">
+                      <div class="card-body {{ 'alert-success' if not a.slug }} {{ 'alert-primary' if results.params.account === a.slug }} px-3 py-2">
+                        <h6 class="text-{{ 'success' if not a.slug else 'primary' }}">
+                          <b>{{ a.title }}</b>
+                          {% if not a.slug %}
+                            (Primary account)
+                          {% endif %}
+                        </h6>
+                        <code data-clipboard-text="{{ a.payId }}${{ hostname }}" class="text-dark">{{ a.payId }}${{ hostname }}</code><br />
+                        <code data-clipboard-text="{{ a.account }}" class="text-muted">{{ a.account }}</code> 
+                        {% if a.tag %}
+                          <br />
+                          <span class="alert-danger px-2 py-0" data-clipboard-text="{{ a.tag }}">
+                            Destination Tag <code><b>{{ a.tag }}</b></code>
+                          </span>
+                        {% endif %}
+                        {# <code>{{ a.slug }}</code> #}
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}{# User Accounts < 1 #}
+                  <p class="alert alert-primary text-center">
+                    No user accounts published (yet)
+                  </p>
+                {% endif %}{# User Accounts > 0 #}
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if results.accounts.length < 1 or mode === 'development' %}
+            <hr>
+            <pre class="text-left text-primary">{{ results|dump(2) }}</pre>
+          {% endif %}
         </div>
       </div>
       
@@ -52,5 +101,62 @@
       {{ _error.render(title, body) }}
     {% endapi %}
 
+    {% if mode === 'development' %}
+      <hr>
+      <ul class="list-unstyled">
+        <li><code>module</code> {{ module }}</li>
+        {# <li><code>baselocation</code> {{ baselocation }}</li> #}
+        {# <li><code>path</code> {{ path }}</li> #}
+        <li><code>handle</code> {{ handle }}</li>
+        <li><code>account</code> {{ account }}</li>
+        {# <li><code>params</code> {{ params|dump }}</li> #}
+        <li><code>mobile</code> {{ mobile }}</li>
+        {# <li><code>is.ios</code> {{ is.ios }}</li> #}
+        {# <li><code>is.mac</code> {{ is.mac }}</li> #}
+        {# <li><code>is.android</code> {{ is.android }}</li> #}
+        {# <li><code>mode</code> {{ mode }}</li> #}
+        <li><code>locale</code> {{ locale }}</li>
+        {# <li><code>baselocation</code> {{ baselocation }}</li> #}
+        {# <li><code>mode</code> {{ mode }}</li> #}
+        {# <li><code>appstorelinks</code> {{ appstorelinks|dump }}</li> #}
+        {# <li><code>trusted</code> {{ trusted }}</li> #}
+        {# <li><code>hostname</code> {{ hostname }}</li> #}
+      </ul>
+    {% endif %}
+
+    <style>
+      [data-clipboard-text]:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      [data-clipboard-text]:active {
+        color: #fff !important;
+        background-color: rgba(0,0,0,.8);
+        border: 3px solid rgba(0,0,0,.8);
+        border-radius: 3px;
+      }
+      [data-clipboard-text]:active:hover:after {
+        content: 'Copied';
+        {# display: none; #}
+      }
+      [data-clipboard-text]:hover:after {
+        content: 'Click to copy';
+        text-decoration: none;
+        font-size: .7em;
+        display: inline-block;
+        margin-left: 10px;
+        padding: 1px 4px;
+        position: relative;
+        top: -2px;
+        color: #c0c0c0;
+      }
+    </style>
+    <script src="/assets/js/clipboard.min.js"></script>
+    <script>
+      var clipboard = new ClipboardJS('[data-clipboard-text]')
+      clipboard.on('success', function (e) {
+        // e.trigger.querySelector('i.fa').setAttribute('class', 'fa fas fa-check')
+      })
+    </script>
   </div>
 {% endblock %}

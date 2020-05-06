@@ -122,7 +122,7 @@ module.exports = async function (expressApp) {
     return next('route')
   }, handleSignPage)
 
-  router.get('/user/:handle([a-zA-Z0-9_-]+)/:account(r[a-zA-Z0-9]+)?', (req, res, next) => {
+  router.get('/user/:handle([a-zA-Z0-9_-]+)([/+ ]?):account([a-zA-Z0-9_-]+)?', (req, res, next) => {
     return res.render('user-profiles/index.html', {
       module: 'profile',
       baselocation: req.config.baselocation,

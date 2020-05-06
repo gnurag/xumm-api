@@ -1,4 +1,5 @@
 const log = require('@src/handler/log')('app:user-profile-page')
+const userProfile = require('@src/api/v1/internal/user-profile-data')
 
 module.exports = async (params, expressApp, invoker) => {
   if (invoker !== 'web') {
@@ -11,6 +12,11 @@ module.exports = async (params, expressApp, invoker) => {
   // wietse+tipbot$xumm.me
 
   log('user-profile-page', params)
+  const returnAccount = await userProfile(params.handle, null, expressApp.db)
+  log('user-profile-page-results', returnAccount)
 
-  return params
+  return { 
+    params,
+    ...returnAccount
+  }
 }

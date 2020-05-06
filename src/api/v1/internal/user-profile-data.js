@@ -97,6 +97,67 @@ module.exports = async (userSlug, PayId, db) => {
     // }
 
     return returnAccount
+  } else if (typeof userSlug === 'string') {
+    const accountsFromDb = await db(`
+      SELECT
+        CONCAT(
+          users.user_slug,
+          IF(
+            useraccounts.useraccount_slug IS NULL,
+            '',
+            CONCAT('+', useraccounts.useraccount_slug)
+          )
+        ) as __full_slug,
+        useraccounts.useraccount_account,
+        users.user_name,
+        useraccounts.useraccount_slug,
+        users.user_slug,
+        users.user_intro_text,
+        users.user_profilepage
+      FROM
+        users
+      LEFT JOIN
+        useraccounts ON (
+          users.user_id = useraccounts.user_id
+        )
+      WHERE
+        users.user_slug = :slug
+        AND
+        useraccounts.useraccount_allowlookup = 1
+      ORDER BY
+        useraccounts.useraccount_slug IS NULL DESC,
+        useraccounts.useraccount_slug ASC
+    `, {
+      slug: userSlug.toLowerCase().trim()
+    })
+    
+    const profile = {}
+    const accounts = accountsFromDb.map(a => {
+      return {
+        title: a.useraccount_slug ? humanize(a.useraccount_slug) : accountsFromDb[0].user_name,
+        payId: a.__full_slug,
+        account: a.useraccount_account.split(':')[0],
+        tag: a.useraccount_account.split(':')[1] || null,
+        slug: a.useraccount_slug 
+      }
+    })
+
+    if (accountsFromDb.length > 0) {
+      const profilepage = Boolean(accountsFromDb[0].user_profilepage)
+      if (profilepage) {
+        Object.assign(profile, {
+          slug: accountsFromDb[0].user_slug,
+          name: accountsFromDb[0].user_name,
+          intro: accountsFromDb[0].user_intro_text,
+          profilepage
+        })
+      }
+    }
+    
+    return {
+      profile,
+      accounts
+    }
   }
 
   return
