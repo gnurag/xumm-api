@@ -55,21 +55,22 @@
                   {% for a in results.accounts %}
                     <div class="card mt-2 shadow-sm">
                       <div class="card-body {{ 'alert-success' if not a.slug }} {{ 'alert-primary' if results.params.account === a.slug }} px-3 py-2">
-                        <h6 class="text-{{ 'success' if not a.slug else 'primary' }}">
+                        <h5 class="text-{{ 'success' if not a.slug else 'dark' }}">
                           <b>{{ a.title }}</b>
                           {% if not a.slug %}
                             (Primary account)
                           {% endif %}
-                        </h6>
-                        <code data-clipboard-text="{{ a.payId }}${{ hostname }}" class="text-dark">{{ a.payId }}${{ hostname }}</code><br />
-                        <code data-clipboard-text="{{ a.account }}" class="text-muted">{{ a.account }}</code> 
-                        {% if a.tag %}
-                          <br />
-                          <span class="alert-danger px-2 py-0" data-clipboard-text="{{ a.tag }}">
-                            Destination Tag <code><b>{{ a.tag }}</b></code>
-                          </span>
-                        {% endif %}
-                        {# <code>{{ a.slug }}</code> #}
+                        </h5>
+                        <code data-clipboard-text="{{ a.payId }}${{ hostname }}" class="text-dark px-3 py-2 bg-light d-inline-block mb-2 border shadow rounded border-muted">{{ a.payId }}${{ hostname }}</code><br />
+                        <code data-clipboard-text="{{ a.xaddr }}" class="text-primary"><b>{{ a.xaddr }}</b></code><br />
+                        <small>
+                          <code data-clipboard-text="{{ a.account }}" class="text-muted">{{ a.account }}</code> 
+                          {% if a.tag %}
+                            <span class="alert-danger px-2 py-0" data-clipboard-text="{{ a.tag }}">
+                              Destination Tag <code><b>{{ a.tag }}</b></code>
+                            </span>
+                          {% endif %}
+                        </small>
                       </div>
                     </div>
                   {% endfor %}
@@ -131,8 +132,8 @@
       }
       [data-clipboard-text]:active {
         color: #fff !important;
-        background-color: rgba(0,0,0,.8);
-        border: 3px solid rgba(0,0,0,.8);
+        background-color: rgba(0,0,0,.8) !important;
+        border-color: rgba(0,0,0,.8) !important;
         border-radius: 3px;
       }
       [data-clipboard-text]:active:hover:after {
@@ -147,7 +148,7 @@
         margin-left: 10px;
         padding: 1px 4px;
         position: relative;
-        top: -2px;
+        top: -1px;
         color: #c0c0c0;
       }
     </style>

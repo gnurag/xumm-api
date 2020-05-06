@@ -2,6 +2,7 @@
 const stringSimilarity = require('string-similarity')
 const humanize = require('humanize-string')
 const log = require('@src/handler/log')('app:userprofile')
+const xTagged = require('xrpl-tagged-address-codec')
 
 // TODO: Tests
 
@@ -133,12 +134,16 @@ module.exports = async (userSlug, PayId, db) => {
     
     const profile = {}
     const accounts = accountsFromDb.map(a => {
+      const account = a.useraccount_account.split(':')[0]
+      const tag = a.useraccount_account.split(':')[1] || null
+      const xaddr = xTagged.Encode({account, tag})
       return {
         title: a.useraccount_slug ? humanize(a.useraccount_slug) : accountsFromDb[0].user_name,
         payId: a.__full_slug,
-        account: a.useraccount_account.split(':')[0],
-        tag: a.useraccount_account.split(':')[1] || null,
-        slug: a.useraccount_slug 
+        slug: a.useraccount_slug,
+        account,
+        tag,
+        xaddr
       }
     })
 
