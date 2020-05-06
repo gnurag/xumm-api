@@ -321,8 +321,13 @@ const payId = {
           // log(response)
           if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
             if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
-              if (response.addressDetails.address.match(/^[XT]/)) {
-                const decodedXaddress = taggedAddressCodec.Decode(response.addressDetails.address)
+              if (response.addressDetails.address.match(/^[rXT]/)) {
+                const decodedXaddress = response.addressDetails.address.match(/^r/)
+                  ? {
+                    account: response.addressDetails.address.split(':')[0],
+                    tag: response.addressDetails.address.split(':')[1] || null
+                  }
+                  : taggedAddressCodec.Decode(response.addressDetails.address)
                 const resolvedPayIdDestination = await resolver.get(decodedXaddress.account, net)
                 const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
                   return m.alias !== m.account
