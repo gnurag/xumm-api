@@ -8,6 +8,7 @@ const addressCodec = require('ripple-address-codec')
 const uuid = require('uuid/v4')
 const { fork } = require('child_process')
 const updatePushBadge = require('@api/v1/internal/update-push-badge')
+const crypto = require('crypto')
 
 module.exports = async (req, res) => {
   /**
@@ -68,6 +69,34 @@ module.exports = async (req, res) => {
               response = formatPayloadData(payload, response)
               delete response.meta.custom_identifier
               delete response.meta.custom_blob
+
+              response.payload.hash = null
+
+              try {
+                const extUniqueId = await req.db(`
+                  SELECT
+                    device_extuniqueid
+                  FROM
+                    devices
+                  WHERE
+                    device_id = :device_id
+                  AND
+                    user_id = :user_id
+                  AND
+                    device_disabled IS NULL
+                  LIMIT 1
+                `, {
+                  device_id: req.__auth.device.id,
+                  user_id: req.__auth.user.id
+                })
+
+                const shasum = crypto.createHash('sha1')
+                shasum.update(codec.encode(response.payload.request_json) + '+' + extUniqueId[0].device_extuniqueid)
+                response.payload.hash = shasum.digest('hex')
+              } catch (e) {
+                logChild(e.message)
+                req.app.sendErrorToBugsnag(e)
+              }
             }
     
             return res.json(response)
