@@ -6,12 +6,8 @@ module.exports = async function (expressApp) {
     log(` >> ExpressError @ RouteType[${req.routeType}]`, error.toString())
     log(error, req.__auth)
 
-    if (typeof expressApp.config.bugsnagKey !== 'undefined') {
-      if (typeof expressApp.bugsnagClient !== 'undefined') {
-        expressApp.bugsnagClient.notify(error.causingError || error, {
-          metaData: req.__auth || {}
-        })
-      }
+    if (typeof expressApp.sendErrorToBugsnag !== 'undefined') {
+      expressApp.sendErrorToBugsnag(error)
     }
 
     const errorUuid = res.get('X-Call-Ref') || uuid()

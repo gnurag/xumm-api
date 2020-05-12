@@ -45,6 +45,8 @@ module.exports = async function (expressApp) {
     }
   }
 
+  Object.assign(expressApp, {sendErrorToBugsnag})
+
   const errorHandler = async (e, req, res) => {
     // TODO: migrate to module
     sendErrorToBugsnag(e, req)
