@@ -13,7 +13,7 @@ module.exports = async function (expressApp) {
    * API Error handler
    */
 
-  const sendErrorToBugsnag = (e, req) => {
+  const sendErrorToBugsnag = (e, req = {}) => {
     // expressApp.bugsnagClient.notify
     //isError
     if (typeof expressApp.config.bugsnagKey !== 'undefined') {
