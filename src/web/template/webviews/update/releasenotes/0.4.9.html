@@ -1,0 +1,38 @@
+<p>
+    This version is an early release of the upcoming 0.5.0, to push out some updates in advance. This allows some other XRP ledger ecosystem
+    developers like <b>NixerFFM</b> &amp; <b>Towo Labs</b> to move forward with their product releases relying on XUMM.
+</p>
+
+<h4>Added / Improved</h4>
+<ul>
+    <li>Added this Release Note modal after installing a new XUMM version</li>
+    <li>Account list now shows if the account is Read Only, Read/Write and/or a Regular Key (rekeyed)</li>
+    <li>Support for AccountDelete transactions</li>
+    <li>Added haptic feedback (can be turned off in Settings)</li>
+    <li>If there's no (internet / network) connectivity, XUMM will now show a "Disconnected" message</li>
+    <li>If there's a destination account address (r...) or Payload link on the clipboard, XUMM offers to open it</li>
+    <li>Improved security</li>
+    <li>Allow selecting a preferred transaction explorer</li>
+    <li>Unremovable Trust Lines (currencies) now show a message (reason)</li>
+    <li>Timeout on sending &amp; confirming a transaction</li>
+    <li>Updated conditions for IOU (currency) exchange Liquidity warning</li>
+</ul>
+
+<h4>Changed / Fixed</h4>
+<ul>
+    <li>Entering an amount for a Sign Request without a predefined amount is now mandatory</li>
+    <li>When sending a payment, the currency code for a HEX currency code was not decoded to text</li>
+    <li>When a node is unavailable, another node will be contacted. On the next XUMM start the fallback will now be reverted</li>
+    <li>Issuer name now displayed on the home screen (assets)</li>
+    <li>Transaction Fee is now min. 12 drops (fixes "zero fee" bug)</li>
+    <li>Sometimes the account list (for account switching) didn't scroll down far enough</li>
+    <li>Fixed app freeze on "Explain Balance" after AccountDelete attempt</li>
+    <li>No longer count destination tag 0 (zero) for mandatory destination tag detection (Send flow)</li>
+    <li>On small screens, the keyboard would be on top of the Name field when adding contacts</li>
+    <li>Sharing the transaction hash sometimes copied an empty string instead of the tx hash</li>
+    <li>Read only accounts with Regular Key (became read/write) didn't allow adding currencies from the home screen</li>
+    <li>Fixed condition (multi window) where PIN wasn't asked</li>
+    <li>When changing the passcode: first digit could not be removed</li>
+    <li>Fixed "invalid payload" message on for some OfferCreate sign requests</li>
+    <li>Fixed condition causing Trust Lines (currencies) not showing up</li>
+</ul>
