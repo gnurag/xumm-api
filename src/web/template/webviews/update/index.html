@@ -10,19 +10,15 @@
   }
 </style>
 
-{# <h3>{{ 'INAPP_TITLE_TOS_PRIVACY'|i18n }}</h3> #}
-{% if update %}
+{% if update and r/^[0-9]+\.[0-9]+\.[0-9]+$/g.test(update) %}
   <p class="alert alert-primary text-center px-3 py-3">
     <b>
       Version {{ update }} - Release notes
     </b>
   </p>
 
-  <ul class="pl-3 ml-2 mr-1">
-    <li class="pb-2">Improvement X</li>
-    <li class="pb-2">New feature Y</li>
-    <li class="pb-2">Bugfix Z</li>
-  </ul>
+  {% include './releasenotes/' ~ update ~ '.html' %}
+
 {% else %}
   <p class="alert alert-danger text-center">
     Error loading release notes.
@@ -32,13 +28,4 @@
 {% endblock %}
 
 {% block head %}
-{#
-<script>
-  (function() {
-    if (typeof window.ReactNativeWebView !== 'undefined') {
-      window.ReactNativeWebView.postMessage(JSON.stringify({version: {{version|default(1)}}}))
-    }
-  })()
-</script>
-#}
 {% endblock %}
