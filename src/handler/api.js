@@ -162,6 +162,7 @@ module.exports = async function (expressApp) {
           { method: [ 'get', 'post' ], path: 'ping-nomiddleware', disableMiddleware: true, module: 'ping' },
           { method: [ 'get', 'post' ], path: 'ping-noauth', disableAuth: true, module: 'ping' },
           { method: [ 'get', 'post' ], path: 'ping' },
+          { method: 'get', path: 'curated-assets' },
           { method: [ 'get' ], path: 'payload/:payloads__payload_id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})', module: 'payload-get' },
           { method: [ 'get' ], path: 'payload/ci/:payloads_external_meta__meta_string(*)', module: 'payload-get' },
           { method: [ 'delete' ], path: 'payload/:payloads__payload_id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})', module: 'payload-cancel' },
