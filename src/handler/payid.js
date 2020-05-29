@@ -26,6 +26,20 @@ module.exports = async function (expressApp) {
     if (req.payIdAccept) {
       req.isPayId = true
       req.isMainNet = Boolean(req.payIdAccept[1].match(/main|live/))
+    } else {
+      let message = `Payment information for ${req.sanitizedPath.slice(1)}$${req.hostname} could not be found.`
+      try {
+        const payIdParts = usedHeaders.accept.split('/')[1].split('+')[0].split('-')
+        if (payIdParts.length === 2) {
+          message = `Payment information for ${req.sanitizedPath.slice(1)}$${req.hostname} in ` +
+            `${payIdParts[0].toUpperCase()} on ${payIdParts[1].toUpperCase()} could not be found.`
+        }
+      } catch (e) {}
+      return res.status(404).json({
+        statusCode: 404,
+        error: 'Not Found',
+        message
+      })
     }
 
     req.payIdNet = req.isMainNet
