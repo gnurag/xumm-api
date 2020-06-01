@@ -294,7 +294,9 @@ const payId = {
         )
         log('Lookup: payId', query, endpoint)
 
-        const lookupTypeHeaders = {}
+        const lookupTypeHeaders = {
+          general: 'application/payid+json'
+        }
 
         if (net !== '') {
           if (net.match(/main|live/)) {
@@ -314,47 +316,92 @@ const payId = {
             method: 'get',
             ...defaultFetchConfig,
             headers: {
-              'Accept': lookupTypeHeaders[lookupNet]
+              'Accept': lookupTypeHeaders[lookupNet],
+              'PayID-Version': '1.0'
             }    
           })
-          const response = await call.json()
-          // log(response)
+          
+          let response
+          let matchingAddresses = []
+
+          try {
+            response = await call.json()
+          } catch (e) {
+            response = {}
+          }
+
+          if (typeof response === 'object' && response !== null && typeof response.addresses !== 'undefined') {
+            if (Array.isArray(response.addresses) && response.addresses.length > 0) {
+              matchingAddresses = response.addresses.filter(r => {
+                return typeof r.paymentNetwork === 'string'
+                  && typeof r.addressDetailsType === 'string'
+                  && r.paymentNetwork.toUpperCase() === 'XRPL'
+                  && r.addressDetailsType === 'CryptoAddressDetails'
+                  && typeof r.addressDetails === 'object'
+                  && r.addressDetails !== null
+                  && typeof r.addressDetails.address === 'string'
+                  && typeof r.environment === 'string'
+                  && (
+                    (net === '' || net.match(/main|live/))
+                      ? r.environment.toLowerCase().match(/main|live/)
+                      : r.environment.toLowerCase().match(/test|dev/)
+                  )
+              }).sort(a => {
+                return a.environment === 'MAINNET' ? -1 : 1
+              })
+            }
+          }
+
           if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
             if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
-              if (response.addressDetails.address.match(/^[rXT]/)) {
-                const decodedXaddress = response.addressDetails.address.match(/^r/)
-                  ? {
-                    account: response.addressDetails.address.split(':')[0],
-                    tag: response.addressDetails.address.split(':')[1] || null
-                  }
-                  : taggedAddressCodec.Decode(response.addressDetails.address)
-                const resolvedPayIdDestination = await resolver.get(decodedXaddress.account, net)
-                const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
-                  return m.alias !== m.account
-                })
+              matchingAddresses.push({
+                paymentNetwork: 'XRPL',
+                environment: lookupNet.toUpperCase(),
+                ...response
+              })
+            }
+          }
 
-                let alias = resolvedAliasses.length > 0
-                  ? resolvedAliasses[0].alias
-                  : query
-
-                if (new RegExp(app.config.userProfileLocation + '$').test(query)) {
-                  returnAccount = await payIdProfile('', query, app.db)
-                  // log({query, returnAccount})
-                  if (typeof returnAccount === 'object' && returnAccount !== null) {
-                    alias = returnAccount.name || alias
+          if (matchingAddresses.length > 0) {
+            return await Promise.all(matchingAddresses.map(async response => {
+              if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
+                if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
+                  if (response.addressDetails.address.match(/^[rXT]/)) {
+                    const decodedXaddress = response.addressDetails.address.match(/^r/)
+                      ? {
+                        account: response.addressDetails.address.split(':')[0],
+                        tag: response.addressDetails.address.split(':')[1] || null
+                      }
+                      : taggedAddressCodec.Decode(response.addressDetails.address)
+                    const resolvedPayIdDestination = await resolver.get(decodedXaddress.account, net)
+                    const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
+                      return m.alias !== m.account
+                    })
+    
+                    let alias = resolvedAliasses.length > 0
+                      ? resolvedAliasses[0].alias
+                      : query
+    
+                    if (new RegExp(app.config.userProfileLocation + '$').test(query)) {
+                      returnAccount = await payIdProfile('', query, app.db)
+                      // log({query, returnAccount})
+                      if (typeof returnAccount === 'object' && returnAccount !== null) {
+                        alias = returnAccount.name || alias
+                      }
+                    }
+                    
+                    return {
+                      source,
+                      network: null,
+                      alias,
+                      account: decodedXaddress.account,
+                      tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
+                      description: query
+                    }
                   }
                 }
-                
-                return [{
-                  source,
-                  network: null,
-                  alias,
-                  account: decodedXaddress.account,
-                  tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
-                  description: query
-                }]
               }
-            }
+            }))
           }
         }
       } catch (e) {
