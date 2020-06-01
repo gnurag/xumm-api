@@ -298,14 +298,14 @@ const payId = {
 
         if (net !== '') {
           if (net.match(/main|live/)) {
-            Object.assign(lookupTypeHeaders, {mainnet: 'application/xrpl-mainnet+json; charset=utf-8'})
+            Object.assign(lookupTypeHeaders, {mainnet: 'application/xrpl-mainnet+json'})
           } else {
-            Object.assign(lookupTypeHeaders, {testnet: 'application/xrpl-testnet+json; charset=utf-8'})
+            Object.assign(lookupTypeHeaders, {testnet: 'application/xrpl-testnet+json'})
           }
         } else {
           Object.assign(lookupTypeHeaders, {
-            mainnet: 'application/xrpl-mainnet+json; charset=utf-8',
-            testnet: 'application/xrpl-testnet+json; charset=utf-8'  
+            mainnet: 'application/xrpl-mainnet+json',
+            testnet: 'application/xrpl-testnet+json'
           })
         }
 
