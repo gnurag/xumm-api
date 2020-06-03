@@ -335,11 +335,8 @@ const payId = {
               // log(response.addresses)
               matchingAddresses = response.addresses.filter(r => {
                 return typeof r.paymentNetwork === 'string'
-                  && (
-                    /** Todo: determine standard (Xpring PayId vs. Javier Romero) */
-                    (typeof r.addressDetailsType === 'string' && r.addressDetailsType === 'CryptoAddressDetails') ||
-                    (typeof r.addressDetailType === 'string' && r.addressDetailType === 'CryptoAddressDetails')
-                  )
+                  && typeof r.addressDetailsType === 'string'
+                  && r.addressDetailsType === 'CryptoAddressDetails'
                   && r.paymentNetwork.toUpperCase() === 'XRPL'
                   && typeof r.addressDetails === 'object'
                   && r.addressDetails !== null
