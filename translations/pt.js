@@ -28,7 +28,7 @@ module.exports = {
     WAIT_SCAN_QR_DETAILED: `Esperando que você faça o scan e abra o 
                             <code class="text-primary"><b class="text-primary">__txtype__</b></code>
                           a 
-                            >                            <code class="text-primary"><b>__txdestination__</b></code>
+                            <code class="text-primary"><b>__txdestination__</b></code>
                           com o <b class="font-logo">xumm</b> app.`,
     WAIT_FOR_RESOLVE: `Esperando que você resolva (aceite / negue) o 
                       <code class="text-primary"><b class="text-primary"><q>__txtype__</q></b></code>
