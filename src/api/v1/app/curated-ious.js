@@ -13,7 +13,9 @@ module.exports = async (req, res) => {
         currency.knownaccount_name as iou_name,
         currency.knownaccount_currency_avatar_url as iou_avatar,
         issuer.knownaccount_id as issuer_id,
-        currency.knownaccount_id as currency_id
+        currency.knownaccount_id as currency_id,
+        issuer.knownaccounts_shortlist as issuer_shortlist,
+        currency.knownaccounts_shortlist as iou_shortlist
       FROM 
         knownaccounts as currency
       JOIN
@@ -39,6 +41,7 @@ module.exports = async (req, res) => {
             name: b.issuer_name,
             domain: b.issuer_domain,
             avatar: b.issuer_avatar,
+            shortlist: b.issuer_shortlist,
             currencies: {}
           }
         }
@@ -51,7 +54,8 @@ module.exports = async (req, res) => {
           issuer: b.iou_issuer,
           currency: b.iou_currency,
           name: b.iou_name,
-          avatar: b.iou_avatar
+          avatar: b.iou_avatar,
+          shortlist: b.iou_shortlist
         }
         return a
       }, {})
