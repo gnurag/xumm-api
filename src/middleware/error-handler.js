@@ -2,7 +2,7 @@ const uuid = require('uuid/v4')
 const log = require('@src/handler/log')('app:error-handler')
 
 module.exports = async function (expressApp) {
-  expressApp.use ((error, req, res, next) => {
+  expressApp.use((error, req, res, next) => {
     log(` >> ExpressError @ RouteType[${req.routeType}]`, error.toString())
     log(error, req.__auth)
 

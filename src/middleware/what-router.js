@@ -1,7 +1,10 @@
 module.exports = async function (expressApp) {
   expressApp.use((req, res, next) => {
     if (typeof req.headers['accept'] !== 'undefined' &&
-      req.headers['accept'].match(/application\/[a-z]+-[a-z]+\+json/i) &&
+      (
+        req.headers['accept'].match(/application\/[a-z]+-[a-z]+\+json/i) ||
+        req.headers['accept'].match(/application\/payid\+json/i)
+      ) &&
       req.hostname === req.config.userProfileLocation
     ) {
       req.routeType = 'payid'
