@@ -109,6 +109,7 @@
     ],
     "ext": "js,json,html"
   },
+  "_moduleAliasIgnoreWarning": true,
   "_moduleAliases": {
     "@src": "src",
     "@web": "src/web",
