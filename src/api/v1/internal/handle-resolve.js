@@ -354,13 +354,21 @@ const payId = {
             if (Array.isArray(response.addresses) && response.addresses.length > 0) {
               // log(response.addresses)
               matchingAddresses = response.addresses.filter(r => {
+                // log(r.addressDetails)
                 return typeof r.paymentNetwork === 'string'
                   && typeof r.addressDetailsType === 'string'
                   && r.addressDetailsType === 'CryptoAddressDetails'
                   && r.paymentNetwork.toUpperCase() === 'XRPL'
                   && typeof r.addressDetails === 'object'
                   && r.addressDetails !== null
-                  && typeof r.addressDetails.address === 'string'
+                  && (
+                    typeof r.addressDetails.address === 'string' ||
+                    (
+                      typeof r.addressDetails.address === 'object' &&
+                      r.addressDetails.address !== null &&
+                      typeof r.addressDetails.address.account === 'string'
+                    )
+                  )
                   && typeof r.environment === 'string'
                   && (
                     (net === '' || net.match(/main|live/))
@@ -370,6 +378,7 @@ const payId = {
               }).sort(a => {
                 return a.environment === 'MAINNET' ? -1 : 1
               })
+              // log({matchingAddresses})
             }
           }
 
@@ -399,15 +408,29 @@ const payId = {
           if (matchingAddresses.length > 0) {
             return await Promise.all(matchingAddresses.map(async response => {
               if (typeof response === 'object' && response !== null && typeof response.addressDetails === 'object') {
+                if (response.addressDetails !== null && typeof response.addressDetails.address === 'object') {
+                  // Classic address hack
+                  if (response.addressDetails.address !== null && typeof response.addressDetails.address.account === 'string') {
+                    response.addressDetails.address = response.addressDetails.address.account.trim() 
+                      + ':' + (response.addressDetails.address.destinationTag || '')
+                  }
+                }
                 if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
                   if (response.addressDetails.address.match(/^[rXT]/)) {
-                    const decodedXaddress = response.addressDetails.address.match(/^r/)
-                      ? {
-                        account: response.addressDetails.address.split(':')[0],
-                        tag: response.addressDetails.address.split(':')[1] || null
-                      }
-                      : taggedAddressCodec.Decode(response.addressDetails.address)
-                    const resolvedPayIdDestination = await resolver.get(decodedXaddress.account, net)
+                    const classicAddress = {}
+                    const isRAddress = response.addressDetails.address.trim().match(/^r/)
+                    if (isRAddress) {
+                      const addressTagSplit = response.addressDetails.address.trim().split(':')
+                      Object.assign(classicAddress, {
+                        account: addressTagSplit[0],
+                        tag: addressTagSplit.length > 1 && addressTagSplit[1] !== ''
+                          ? addressTagSplit[1]
+                          : (typeof response.addressDetails.destinationTag !== 'undefined' ? String(destinationTag) : null)
+                      })
+                    } else {
+                      Object.assign(classicAddress, taggedAddressCodec.Decode(response.addressDetails.address))
+                    }
+                    const resolvedPayIdDestination = await resolver.get(classicAddress.account, net)
                     const resolvedAliasses = resolvedPayIdDestination.matches.filter(m => {
                       return m.alias !== m.account
                     })
@@ -431,8 +454,8 @@ const payId = {
                       source,
                       network: null,
                       alias,
-                      account: decodedXaddress.account,
-                      tag: decodedXaddress.tag === null ? null : Number(decodedXaddress.tag),
+                      account: classicAddress.account,
+                      tag: classicAddress.tag === null ? null : Number(classicAddress.tag),
                       description: query
                     }
                   }
