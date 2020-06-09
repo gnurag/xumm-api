@@ -12,6 +12,13 @@ const opts = {
 
 module.exports = async function (expressApp) {
   let loadedConfig = {}
+
+  // Tested config load delay, works
+  // await new Promise((resolve, reject) => {
+  //   setTimeout(() => {
+  //     resolve()
+  //   }, 3000)
+  // })
   
   if (!opts.loaded) {
     await new Promise((resolve, reject) => {
