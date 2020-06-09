@@ -22,12 +22,17 @@ async function start () {
     { type: 'middleware', module: 'what-router' },
     { type: 'middleware', module: 'remote-addr' },
     { type: 'middleware', module: 'cli-logger' },
+    { type: 'middleware', module: 'error-handler' },
+    { type: 'middleware', module: 'redis-pubsub' },
+    { type: 'middleware', module: 'xpring-metric-reporter' },
+    /**
+     * Handlers always last, otherwise they don't have
+     * the middleware modules registered
+     */
     { type: 'handler', module: 'web' },
     { type: 'handler', module: 'api' },
     { type: 'handler', module: 'wss' },
     { type: 'handler', module: 'payid' },
-    { type: 'middleware', module: 'error-handler' },
-    { type: 'middleware', module: 'redis-pubsub' },
   ]
 
   log('Loading modules') 

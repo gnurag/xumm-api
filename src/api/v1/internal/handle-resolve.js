@@ -138,6 +138,10 @@ const xrplns = {
     return utf8.encode(query)
   },
   async get (query) {
+    if (is.possiblePayId(query)) {
+      return []
+    }
+
     const source = 'xrplns'
     try {
       const results = await (async () => {
@@ -190,6 +194,10 @@ const xrplns = {
 
 const bithomp = {
   async get (query) {
+    if (is.possiblePayId(query)) {
+      return []
+    }
+
     const source = 'bithomp.com'
     try {
       const method = is.possibleXrplAccount(query) && query.length >= 20 ? 'address' : 'username'
@@ -220,6 +228,10 @@ const bithomp = {
 
 const xrpscan = {
   async get (query) {
+    if (is.possiblePayId(query)) {
+      return []
+    }
+
     const source = 'xrpscan.com'
     if (is.possibleXrplAccount(query)) {
       try {
@@ -250,6 +262,10 @@ const xrpscan = {
 
 const xrpl = {
   async get (query) {
+    if (is.possiblePayId(query)) {
+      return []
+    }
+
     const source = 'xrpl'
     if (is.possibleXrplAccount(query)) {
       try {
@@ -292,6 +308,9 @@ const payId = {
             ? '.well-known/pay'
             : ''
         )
+        let gotActivePayid404s = 0
+        let requestCount = 0
+
         log('Lookup: payId', query, endpoint)
 
         const lookupTypeHeaders = {
@@ -326,6 +345,7 @@ const payId = {
 
           try {
             response = await call.json()
+            requestCount++
           } catch (e) {
             response = {}
           }
@@ -362,6 +382,19 @@ const payId = {
               })
             }
           }
+          
+          if (
+            typeof response === 'object' &&
+            response !== null &&
+            (
+              (typeof response.statusCode !== 'undefined' && Number(response.statusCode) === 404) ||
+              (typeof response.status !== 'undefined' && Number(response.status) === 404) || 
+              (typeof response.addresses !== 'undefined' && Array.isArray(response.addresses) && response.addresses.length < 1)
+            )
+            // typeof response.response.error !== 'undefined' && typeof response.response.message !== 'undefined'
+          ) {
+            gotActivePayid404s++
+          }
 
           if (matchingAddresses.length > 0) {
             return await Promise.all(matchingAddresses.map(async response => {
@@ -390,6 +423,9 @@ const payId = {
                         alias = returnAccount.name || alias
                       }
                     }
+
+                    // log('__________REPORT XPRING RESOLVE TRUE')
+                    app.xpringMetricReporter.recordPayIdResolvedResult(true)
                     
                     return {
                       source,
@@ -403,6 +439,13 @@ const payId = {
                 }
               }
             }))
+          } else {
+            const lookupLength = Object.keys(lookupTypeHeaders).length
+            // log({gotActivePayid404s, requestCount, lookupLength})
+            if (gotActivePayid404s === requestCount && requestCount === lookupLength) {
+              // log('__________REPORT XPRING RESOLVE FALSE')
+              app.xpringMetricReporter.recordPayIdResolvedResult(false)
+            }
           }
         }
       } catch (e) {
@@ -465,6 +508,7 @@ const app = {
   async initialize (req) {
     this.config = req.config
     this.db = req.db
+    this.xpringMetricReporter = req.app.xpringMetricReporter
     
     if (typeof req.query === 'object' && req.query !== null) {
       this.query = Object.assign({}, req.query)
@@ -487,7 +531,8 @@ const app = {
       this.initialized = true
       return this.initialized
     }
-  }
+  },
+  xpringMetricReporter: {}
 }
 
 const resolver = {

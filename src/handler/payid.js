@@ -33,16 +33,17 @@ module.exports = async function (expressApp) {
         req.isPayVersion = Number(usedHeaders.version)
       }
     } else {
+      
       let message = `Payment information for ${req.sanitizedPath.slice(1)}$${req.hostname} could not be found.`
       try {
+        req.app.xpringMetricReporter.recordPayIdLookupBadAcceptHeader()
+  
         const payIdParts = usedHeaders.accept.split('/')[1].split('+')[0].split('-')
         if (payIdParts.length === 2) {
           message = `Payment information for ${req.sanitizedPath.slice(1)}$${req.hostname} in ` +
             `${payIdParts[0].toUpperCase()} on ${payIdParts[1].toUpperCase()} could not be found.`
         }
       } catch (e) {}
-
-      log('PAYIDRESOLVE404 NF, XPRING', typeof req.app.xpringMetricReporter, req.app.xpringMetricReporter, req.xpring)
 
       return res.status(404).json({
         statusCode: 404,
@@ -92,6 +93,8 @@ module.exports = async function (expressApp) {
             payId: `${req.sanitizedPath.slice(1)}$${req.hostname}`
           })
         }
+
+        req.app.xpringMetricReporter.recordPayIdServedResult(true)
       } else {
         next()
       }
@@ -107,7 +110,7 @@ module.exports = async function (expressApp) {
     if ('OPTIONS' === req.method) {
       res.sendStatus(200)
     } else {
-      log('PAYIDRESOLVE404 NF(H), XPRING', typeof req.app.xpringMetricReporter, req.app.xpringMetricReporter, req.xpring)
+      req.app.xpringMetricReporter.recordPayIdServedResult(false)
 
       res.status(404).json({
         statusCode: 404,

@@ -50,6 +50,7 @@
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.0",
     "nunjucks": "^3.2.1",
+    "prom-client": "^12.0.0",
     "qrcode": "^1.4.4",
     "qrcode-svg": "^1.1.0",
     "ripple-binary-codec": "^0.2.6",
