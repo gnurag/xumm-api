@@ -71,23 +71,22 @@ module.exports = async function (expressApp) {
         const account = returnAccount.account.split(':')[0].trim()
         const tag = returnAccount.account.split(':')[1] || null
 
+        const basicPayIdResponse = {
+          addressDetailsType: 'CryptoAddressDetails',
+          addressDetails: {
+            address: xTagged.Encode({account, tag, test: !req.isMainNet})
+          }
+        }
+
         if (req.isPayVersion < 1) {
-          res.json({
-            addressDetailType: 'CryptoAddressDetails',
-            addressDetails: {
-              address: xTagged.Encode({account, tag, test: !req.isMainNet})
-            }
-          })  
+          res.json(basicPayIdResponse)
         } else {
           res.json({
             addresses: [
               {
                 paymentNetwork: 'XRPL',
                 environment: req.isMainNet ? 'MAINNET' : 'TESTNET',
-                addressDetailsType: 'CryptoAddressDetails',
-                addressDetails: {
-                  address: xTagged.Encode({account, tag, test: !req.isMainNet})
-                }
+                ...basicPayIdResponse
               }
             ],
             payId: `${req.sanitizedPath.slice(1)}$${req.hostname}`
