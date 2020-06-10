@@ -416,6 +416,12 @@ const payId = {
                   }
                 }
                 if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
+                  // Classic address hack
+                  if (typeof response.addressDetails.tag !== 'undefined') {
+                    response.addressDetails.address += ':' + response.addressDetails.tag
+                  }
+                }
+                if (response.addressDetails !== null && typeof response.addressDetails.address === 'string') {
                   if (response.addressDetails.address.match(/^[rXT]/)) {
                     const classicAddress = {}
                     const isRAddress = response.addressDetails.address.trim().match(/^r/)
@@ -425,7 +431,7 @@ const payId = {
                         account: addressTagSplit[0],
                         tag: addressTagSplit.length > 1 && addressTagSplit[1] !== ''
                           ? addressTagSplit[1]
-                          : (typeof response.addressDetails.destinationTag !== 'undefined' ? String(destinationTag) : null)
+                          : (typeof response.addressDetails.destinationTag !== 'undefined' ? String(response.addressDetails.destinationTag) : null)
                       })
                     } else {
                       Object.assign(classicAddress, taggedAddressCodec.Decode(response.addressDetails.address))
