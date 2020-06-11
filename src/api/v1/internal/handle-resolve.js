@@ -138,7 +138,7 @@ const xrplns = {
     return utf8.encode(query)
   },
   async get (query) {
-    if (is.possiblePayId(query)) {
+    if (await is.possiblePayId(query)) {
       return []
     }
 
@@ -194,7 +194,7 @@ const xrplns = {
 
 const bithomp = {
   async get (query) {
-    if (is.possiblePayId(query)) {
+    if (await is.possiblePayId(query)) {
       return []
     }
 
@@ -228,7 +228,7 @@ const bithomp = {
 
 const xrpscan = {
   async get (query) {
-    if (is.possiblePayId(query)) {
+    if (await is.possiblePayId(query)) {
       return []
     }
 
@@ -262,7 +262,7 @@ const xrpscan = {
 
 const xrpl = {
   async get (query) {
-    if (is.possiblePayId(query)) {
+    if (await is.possiblePayId(query)) {
       return []
     }
 
