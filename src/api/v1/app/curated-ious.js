@@ -2,7 +2,6 @@ const log = require('@src/handler/log')('app:curatedious')
 
 module.exports = async (req, res) => {
   try {
-    log('Wildcard search', req.params)
     const match = await req.db(`
       SELECT 
         IFNULL(issuer.knownaccount_name, currency.knownaccount_name) as issuer_name,
