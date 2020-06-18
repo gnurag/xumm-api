@@ -6,32 +6,24 @@ module.exports = async (req, res) => {
 
   const defaultOptions = {
     rates: 'to',
-    minOfferCount: 3,
-    maxSpreadPercentage: 3,
-    maxSlippagePercentage: 4,
-    maxSlippagePercentageReverse: 5,
+    maxSpreadPercentage: 4,
+    maxSlippagePercentage: 3,
+    maxSlippagePercentageReverse: 3,
     maxBookLines: 500
   }
 
   const specificOptions = {
     rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq: { // Gatehub
-      _options: {
-        minOfferCount: 10,
-        maxSpreadPercentage: 4
-      },
-      USD: {
-        maxSlippagePercentage: 2,
-        maxSlippagePercentageReverse: 3
-      },
-      EUR: {
-        maxSlippagePercentage: 2,
-        maxSlippagePercentageReverse: 5
-      }
+      _options: {},
+      USD: {},
+      EUR: {}
     },
     rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B: { // Bitstamp
       _options: {},
       USD: {},
-      BTC: {}
+      BTC: {
+        maxSpreadPercentage: 4
+      }
     },
     rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz: { // Sologenic
       '534F4C4F00000000000000000000000000000000': {        
