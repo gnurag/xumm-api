@@ -125,6 +125,7 @@ module.exports = async function (expressApp) {
 
   router.all('*', (req, res) => {
     if ('OPTIONS' === req.method) {
+      res.header('Access-Control-Allow-Origin', '*')
       res.sendStatus(200)
     } else {
       req.app.xpringMetricReporter.recordPayIdServedResult(false)
