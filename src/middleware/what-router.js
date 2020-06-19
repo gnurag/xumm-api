@@ -9,6 +9,7 @@ module.exports = async function (expressApp) {
       req.hostname === req.config.userProfileLocation
     ) {
       req.routeType = 'payid'
+      res.header('Access-Control-Allow-Origin', '*')
     } else if (typeof req.headers['content-type'] !== 'undefined' && req.headers['content-type'].match(/application\/json/i)) {
       req.routeType = 'api'
     } else if (typeof req.headers['upgrade'] !== 'undefined' && req.headers['upgrade'].match(/websocket/i)) {
