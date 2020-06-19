@@ -19,6 +19,10 @@ module.exports = async function (expressApp) {
       version: (req.headers['payid-version'] || '').trim().split('.').slice(0, 2).join('.'),
     }
 
+    if (typeof req.headers['payid-api-version'] !== 'undefined') {
+      usedHeaders.version = req.headers['payid-api-version'].replace(/[^0-9]/g, '')
+    }
+
     req.sanitizedPath = req.path === '/' || req.path === '/.well-known/pay'
       ? '/'
       : req.path.trim().replace(/\/+$/, '').toLowerCase().replace(/[ \+]+/g, '+').toLowerCase()
@@ -82,16 +86,29 @@ module.exports = async function (expressApp) {
         if (req.isPayVersion < 1) {
           res.json(basicPayIdResponse)
         } else {
-          res.json({
-            addresses: [
-              {
-                paymentNetwork: 'XRPL',
-                environment: req.isMainNet ? 'MAINNET' : 'TESTNET',
-                ...basicPayIdResponse
-              }
-            ],
-            payId: `${req.sanitizedPath.slice(1)}$${req.hostname}`
-          })
+          if (req.isPayVersion > 100) {
+            res.json({
+              addresses: [
+                {
+                  paymentNetwork: 'XRPL',
+                  environment: req.isMainNet ? 'MAINNET' : 'TESTNET',
+                  details: basicPayIdResponse.addressDetails
+                }
+              ],
+              payId: `${req.sanitizedPath.slice(1)}$${req.hostname}`
+            })
+          } else {
+            res.json({
+              addresses: [
+                {
+                  paymentNetwork: 'XRPL',
+                  environment: req.isMainNet ? 'MAINNET' : 'TESTNET',
+                  ...basicPayIdResponse
+                }
+              ],
+              payId: `${req.sanitizedPath.slice(1)}$${req.hostname}`
+            })
+          }
         }
 
         req.app.xpringMetricReporter.recordPayIdServedResult(true)
