@@ -336,7 +336,8 @@ const payId = {
             ...defaultFetchConfig,
             headers: {
               'Accept': lookupTypeHeaders[lookupNet],
-              'PayID-Version': '1.0'
+              'PayID-Version': '1.0',
+              'PayID-API-Version': '2020-05-28'
             }    
           })
           
@@ -354,21 +355,36 @@ const payId = {
             if (Array.isArray(response.addresses) && response.addresses.length > 0) {
               // log(response.addresses)
               matchingAddresses = response.addresses.filter(r => {
-                // log(r.addressDetails)
                 return typeof r.paymentNetwork === 'string'
-                  && typeof r.addressDetailsType === 'string'
-                  && r.addressDetailsType === 'CryptoAddressDetails'
-                  && r.paymentNetwork.toUpperCase() === 'XRPL'
-                  && typeof r.addressDetails === 'object'
-                  && r.addressDetails !== null
                   && (
-                    typeof r.addressDetails.address === 'string' ||
                     (
-                      typeof r.addressDetails.address === 'object' &&
-                      r.addressDetails.address !== null &&
-                      typeof r.addressDetails.address.account === 'string'
+                      // typeof r.addressDetailsType === 'string'
+                      // && r.addressDetailsType === 'CryptoAddressDetails'
+                      typeof r.addressDetails === 'object'
+                      && r.addressDetails !== null
+                      && (
+                        typeof r.addressDetails.address === 'string' ||
+                        (
+                          typeof r.addressDetails.address === 'object' &&
+                          r.addressDetails.address !== null &&
+                          typeof r.addressDetails.address.account === 'string'
+                        )
+                      )
+                    ) ||
+                    (
+                      typeof r.details === 'object'
+                      && r.details !== null
+                      && (
+                        typeof r.details.address === 'string' ||
+                        (
+                          typeof r.details.address === 'object' &&
+                          r.details.address !== null &&
+                          typeof r.details.address.account === 'string'
+                        )
+                      )
                     )
                   )
+                  && r.paymentNetwork.toUpperCase() === 'XRPL'
                   && typeof r.environment === 'string'
                   && (
                     (net === '' || net.match(/main|live/))
@@ -377,8 +393,12 @@ const payId = {
                   )
               }).sort(a => {
                 return a.environment === 'MAINNET' ? -1 : 1
+              }).map(a => {
+                if (typeof a.details !== 'undefined') {
+                  a.addressDetails = a.details 
+                }
+                return a
               })
-              // log({matchingAddresses})
             }
           }
 
@@ -391,7 +411,18 @@ const payId = {
               })
             }
           }
-          
+
+          if (typeof response === 'object' && response !== null && typeof response.details === 'object') {
+            if (response.details !== null && typeof response.details.address === 'string') {
+              response.addressDetails = response.details
+              matchingAddresses.push({
+                paymentNetwork: 'XRPL',
+                environment: lookupNet.toUpperCase(),
+                ...response
+              })
+            }
+          }
+
           if (
             typeof response === 'object' &&
             response !== null &&
