@@ -24,6 +24,14 @@ module.exports = async function (expressApp) {
       req.routeType = req.url.slice(1, 4)
     }
 
+    if (
+      ((req.headers['access-control-request-headers'] || '').match(/payid/i) && 'OPTIONS' === req.method)
+      || req.routeType === 'payid'
+    ) {
+      req.routeType = 'payid'
+      res.header('Access-Control-Allow-Origin', '*')
+    }
+
     next('route')
   })
 }
