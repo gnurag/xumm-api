@@ -301,7 +301,8 @@ const payId = {
     const source = 'payid'
     if (await is.possiblePayId(query)) {
       try {
-        const payIdParts = payIdRe.exec(query.toLowerCase())
+        // const payIdParts = payIdRe.exec(query.toLowerCase())
+        const payIdParts = payIdRe.exec(query)
         const asUrl = URL.parse('https://' + payIdParts[2] + '/' + payIdParts[1].replace(/^\/+/, ''))
         const endpoint = asUrl.href + (
           asUrl.path === '/'
@@ -346,6 +347,7 @@ const payId = {
 
           try {
             response = await call.json()
+            // log(response)
             requestCount++
           } catch (e) {
             response = {}
