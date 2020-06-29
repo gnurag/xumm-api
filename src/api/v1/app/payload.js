@@ -70,6 +70,11 @@ module.exports = async (req, res) => {
               delete response.meta.custom_identifier
               delete response.meta.custom_blob
 
+              if (response.meta.custom_instruction === '') {
+                // Empty string not allowed by app (react)
+                response.meta.custom_instruction = null
+              }
+
               if (response.payload.tx_type.toLowerCase() === 'signin') {
                 delete response.payload.request_json.TransactionType
                 response.payload.request_json.SignIn = true
