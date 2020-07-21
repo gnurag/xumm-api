@@ -1,4 +1,5 @@
 {% extends 'webviews/template.html' %}
+{% set rn_version = 'x' %}
 
 {% block content %}
 <style>
@@ -17,19 +18,29 @@
 </style>
 
 {% if update and r/^[0-9]+\.[0-9]+\.[0-9]+$/g.test(update) %}
-  <p class="alert alert-primary text-center px-3 py-3">
-    <b>
-      Version {{ update }} - Release notes
-    </b>
-  </p>
+  {% set rnData %}
+    {% include './releasenotes/' ~ update ~ '.html' ignore missing %}
+  {% endset %}
 
-  <div class="releasenotes">
-    {% include './releasenotes/' ~ update ~ '.html' %}
-  </div>
+  {% if rnData.trim().length > 0 %}
+    <p class="alert alert-primary text-center px-3 py-3">
+      <b>
+        Version {{ update }} - Release notes
+      </b>
+    </p>
+
+    <div class="releasenotes">
+      {{ rnData | safe }}
+    </div>
+  {% else %}
+    <p class="alert alert-warning text-center px-3 py-3">
+      <b>Releasenotes not found (invalid version) or not published (yet)</b>
+    </p>
+  {% endif %}
 
 {% else %}
-  <p class="alert alert-danger text-center">
-    Error loading release notes.
+  <p class="alert alert-danger text-center px-3 py-3">
+    <b>Invalid version.</b>
   </p>
 {% endif %}
 
