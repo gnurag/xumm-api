@@ -13,7 +13,7 @@ module.exports = async function (expressApp) {
   const router = express.Router()
 
   // Sign page, users, visitors
-  router.ws('/sign/:uuid([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})', (ws, req) => {
+  router.ws('/sign/:uuid([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})*', (ws, req) => {
     if (typeof req.params.uuid !== undefined) {
       req.db(`
         UPDATE
@@ -104,7 +104,7 @@ module.exports = async function (expressApp) {
   })
 
   // App admin console
-  router.ws('/app/:uuid([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})', (ws, req) => {
+  router.ws('/app/:uuid([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})*', (ws, req) => {
     const authMsg = `Please send { auth: 'SomeBase64JWT' } command to authorize this socket.`
     const pubSubChannel = `app:${req.params.uuid}`
     let redisMessageHandler
