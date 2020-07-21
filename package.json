@@ -23,9 +23,9 @@
   },
   "homepage": "https://github.com/WietseWind/xrpl-sign-platform",
   "dependencies": {
-    "@bugsnag/js": "^7.0.1",
-    "@bugsnag/plugin-express": "^7.0.1",
-    "aws-sdk": "^2.669.0",
+    "@bugsnag/js": "^7.2.0",
+    "@bugsnag/plugin-express": "^7.2.0",
+    "aws-sdk": "^2.716.0",
     "bufferutil": "^4.0.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",
@@ -49,7 +49,7 @@
     "multer-s3": "^2.9.0",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.0",
-    "nunjucks": "^3.2.1",
+    "nunjucks": "^3.2.2",
     "prom-client": "^12.0.0",
     "qrcode": "^1.4.4",
     "qrcode-svg": "^1.1.0",
@@ -91,11 +91,11 @@
     "canvas": "^2.6.1",
     "jest": "^25.5.4",
     "jest-resolve": "^25.5.1",
-    "jsdom": "^16.2.2",
+    "jsdom": "^16.3.0",
     "link-module-alias": "^1.2.0",
     "nodemon": "^2.0.3",
     "pm2": "^4.4.0",
-    "ws": "^7.2.5"
+    "ws": "^7.3.1"
   },
   "nodemonConfig": {
     "ignore": [
