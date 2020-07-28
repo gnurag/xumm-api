@@ -30,7 +30,8 @@ const main = async (data) => {
       method: 'post',
       body: JSON.stringify({
         to: data.device.pushToken,
-        notification: data.payload.body || {}
+        notification: data.payload.body || {},
+        data: (data.payload.body || {}).data || {}
       }),
       headers: {
         'Content-Type': 'application/json',
