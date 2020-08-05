@@ -29,7 +29,7 @@
     "bufferutil": "^4.0.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.6",
+    "express-fileupload": "^1.1.9",
     "express-jwt": "^5.3.3",
     "express-locale": "^1.2.0",
     "express-ws": "^4.0.0",
