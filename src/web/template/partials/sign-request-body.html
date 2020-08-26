@@ -64,14 +64,14 @@
             {% endif %}
             {% if params.deeplink %}
               <script src="/assets/js/clipboard.min.js"></script>
-              <p class="text-muted">
+              <p class="text-danger">
                 {{ 'COPY_REQUEST_LINK_SOMEAPPS'|i18n }}
               </p>
-              <p class="text-muted">
-                {{ 'COPY_REQUEST_LINK_IF'|i18n }}
+              <p class="text-dark">
+                <b>{{ 'COPY_REQUEST_LINK_IF'|i18n }}</b>
               </p>
               <div class="text-center">
-                <button data-clipboard-text="https://{{ baselocation }}/sign/{{ uuid }}" class="mb-4 btn btn-outline-primary">
+                <button data-clipboard-text="{{ baselocation }}/sign/{{ uuid }}" class="mb-4 btn btn-outline-primary">
                   <i class="fad fa-copy fa"></i>
                   {{ 'COPY_REQUEST_LINK'|i18n }}
                 </button>
