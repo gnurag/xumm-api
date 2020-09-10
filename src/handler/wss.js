@@ -69,7 +69,13 @@ module.exports = async function (expressApp) {
 
           const setKeepaliveInterval = (timediff) => {
             payloadKeepaliveInterval = setInterval(() => {
-              ws.sendJson({ expires_in_seconds: (timediff * -1) - Math.round((new Date() / 1000) - connectedTs) })
+              const expires_in_seconds = timediff * -1 - Math.round(new Date() / 1000 - connectedTs)
+              ws.sendJson({ expires_in_seconds })
+              if (expires_in_seconds < 120 && expires_in_seconds > 0 && typeof req.payloadExpirationTimeout === 'undefined') {
+                req.payloadExpirationTimeout = setTimeout(() => {
+                  payloadExpired()
+                }, expires_in_seconds * 1000)
+              }
             }, 15 * 1000)
           }
 
@@ -92,9 +98,12 @@ module.exports = async function (expressApp) {
             }, 100)
           } else if (payloadExpiration.length === 1 && payloadExpiration[0].timediff < 0) {
             logws(`Payload ${req.params.uuid} expires in ${payloadExpiration[0].timediff * -1} seconds, set timer`)
-            ws.sendJson({ expires_in_seconds: payloadExpiration[0].timediff * -1 })
-
-            payloadTimeoutTimer = setTimeout(payloadExpired, payloadExpiration[0].timediff * -1 * 1000)
+            const expires_in_seconds = payloadExpiration[0].timediff * -1
+            ws.sendJson({ expires_in_seconds })
+          
+            if (expires_in_seconds < 2147483647) {
+              req.payloadExpirationTimeout = setTimeout(payloadExpired, payloadExpiration[0].timediff * -1 * 1000)
+            }
 
             setKeepaliveInterval(payloadExpiration[0].timediff)
           }
