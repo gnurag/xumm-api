@@ -81,14 +81,18 @@ module.exports = async function (expressApp) {
 
           const payloadExpiration = await req.db(`
             SELECT
-              (UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(payload_expiration)) as timediff
+              (UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(payload_expiration)) as timediff,
+              IF(payload_resolved IS NULL, 1, 0) as active
             FROM
               payloads
             WHERE
               call_uuidv4_bin = UNHEX(REPLACE(:call_uuidv4, '-', ''))
             LIMIT 1
           `, { call_uuidv4: req.params.uuid })
-          if (payloadExpiration.length === 1 && payloadExpiration[0].timediff >= 0) {
+          if (payloadExpiration.length === 1 && payloadExpiration[0].active === 0) {
+            // Resolved
+            payloadExpired()
+          } else if (payloadExpiration.length === 1 && payloadExpiration[0].timediff >= 0) {
             payloadExpired()
             setKeepaliveInterval(payloadExpiration[0].timediff)
           } else if (payloadExpiration.length < 1) {
