@@ -101,7 +101,7 @@ module.exports = async function (expressApp) {
             const expires_in_seconds = payloadExpiration[0].timediff * -1
             ws.sendJson({ expires_in_seconds })
           
-            if (expires_in_seconds < 2147483647) {
+            if (expires_in_seconds < 864000) { // Ten days
               req.payloadExpirationTimeout = setTimeout(payloadExpired, payloadExpiration[0].timediff * -1 * 1000)
             }
 
