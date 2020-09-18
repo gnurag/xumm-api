@@ -55,7 +55,8 @@ module.exports = async (req, res) => {
       return res.json(data.map(r => {
         const record = Object.assign({}, r)
         Object.keys(record).forEach(k => {
-          if ((new RegExp('_id$')).test(k) || ['call_emessage_debug'].indexOf(k) > -1) {
+          if ((new RegExp('_id$')).test(k)) {
+            //  || ['call_emessage_debug'].indexOf(k) > -1 » Allow passing call_emessage_debug to devs for eg. underlying paylaod create errors
             Object.assign(record, { [k]: undefined })
           }
         })
