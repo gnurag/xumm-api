@@ -15,11 +15,12 @@ const log = function () {
 const main = async (data) => {
   let timeout
   timeout = setTimeout(() => {
-    log(`TIMEOUT @ ${options.module_name} [ payload(${data.payload_uuidv4}) ]`)
+    log(`Webhook TIMEOUT @ ${data.payload_uuidv4} [ payload(${data.payload_uuidv4}) ]`)
     process.exit(1)
   }, options.process_timeout * 1000)
 
   try {
+    log(`Webhook [ ${data.payload_uuidv4} ] triggering:`, data.meta.url)
     const response = await fetch(data.meta.url, {
       method: 'post',
       body: JSON.stringify(data),
@@ -29,9 +30,9 @@ const main = async (data) => {
     })
 
     const responseText = await response.text()
-    log(`Webhook [ ${options.module_name} ] response text:`, responseText.slice(0, 100))
+    log(`Webhook [ ${data.payload_uuidv4} ] response text:`, responseText.slice(0, 100))
   } catch(e) {
-    log(`${e.message} @ ${options.module_name} [ payload(${data.payload_uuidv4}) ]`)
+    log(`${e.message} @ ${data.payload_uuidv4} [ payload(${data.payload_uuidv4}) ]`)
     process.exit(1)
   }
 
