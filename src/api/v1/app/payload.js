@@ -508,7 +508,7 @@ module.exports = async (req, res) => {
           if (Array.isArray(appDetails) && appDetails.length > 0 && appDetails[0].constructor.name === 'RowDataPacket') {
             // log(payload)
             const callbackUrl = appDetails[0].application_webhookurl
-            if (callbackUrl.match(/^https:/)) {
+            if (callbackUrl.match(/^https:/) || callbackUrl.match(/^http:/)) {
               let custom_meta_blob = payload.meta_custom_blob
               if (typeof custom_meta_blob === 'string') {
                 try {
